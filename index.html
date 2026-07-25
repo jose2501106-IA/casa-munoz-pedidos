@@ -216,6 +216,35 @@ button,.cardRuta,.btnPrincipal,.btnAtras{transition:transform .07s ease,box-shad
 .kanban::-webkit-scrollbar-track{background:var(--durazno);border-radius:999px}
 .col{background:rgba(255,255,255,.4)}
 .pedidoCard,.tarK,.prodTile,.ticket,.cardRuta,.filaProd{background:linear-gradient(180deg,#FFFFFF,#FFFDF4)}
+
+/* ============ NIVELES: asistente de 3 pasos ============ */
+main.vista.pos{display:block;max-width:1000px}
+.pasoBar{display:flex;align-items:flex-start;justify-content:center;gap:6px;padding:16px 0 8px}
+.pasoDot{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:86px}
+.pasoDot .pc{width:44px;height:44px;border-radius:50%;border:3px solid var(--cafe);background:var(--blanco);display:grid;place-items:center;font-family:var(--slab);font-size:17px;box-shadow:var(--sombra-ch)}
+.pasoDot small{font-weight:800;font-size:11.5px;color:var(--cafe-2);letter-spacing:.03em;text-transform:uppercase}
+.pasoDot.actual .pc{background:var(--yema)}
+.pasoDot.hecho .pc{background:var(--verde);color:#fff;border-color:var(--verde)}
+.pasoLinea{flex:none;width:34px;border-top:3px dashed var(--cafe-suave);margin-top:22px}
+.catGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding-top:8px}
+.catGrande{position:relative;background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:26px 12px;cursor:pointer;text-align:center}
+.catGrande .ci{display:block;font-size:52px;line-height:1.1}
+.catGrande .ct{font-weight:800;font-size:19px;margin-top:8px;display:block;color:var(--cafe)}
+.catGrande:active{transform:translate(4px,4px);box-shadow:none}
+.catGrande .cant{top:-12px;right:-10px;min-width:30px;height:30px;font-size:15px}
+.tituloPaso{display:flex;align-items:center;gap:12px;margin:6px 0 10px}
+.tituloPaso .pill{background:var(--yema);border:3px solid var(--cafe);border-radius:999px;padding:6px 20px;font-weight:800;font-size:18px}
+.chipVolver{border:2.5px solid var(--cafe);background:var(--blanco);border-radius:999px;padding:7px 16px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:var(--sombra-ch)}
+.chipVolver:active{transform:translate(2px,2px);box-shadow:none}
+.barraCarrito{position:sticky;bottom:14px;margin-top:22px;display:flex;gap:10px;background:var(--cafe);border-radius:18px;padding:10px;box-shadow:0 10px 24px rgba(59,35,20,.4);z-index:20}
+.barraCarrito .cuenta{flex:none;display:flex;align-items:center;gap:8px;background:var(--crema);border-radius:12px;padding:8px 14px;font-weight:800;font-size:16px}
+.barraCarrito .btnB{flex:1;border:3px solid var(--crema);background:transparent;color:var(--crema);border-radius:12px;font-weight:800;font-size:15.5px;padding:11px;cursor:pointer}
+.barraCarrito .btnB.principal{background:var(--yema);border-color:var(--yema);color:var(--cafe)}
+.barraCarrito .btnB:disabled{opacity:.45;cursor:default}
+.paso3caja{max-width:600px;margin:0 auto}
+.paso3caja .ticket{position:static}
+@media(min-width:900px){#paso2 .prodGrid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}}
+#paso1 .liga{margin-top:22px}
 </style>
 </head>
 <body>
@@ -272,20 +301,44 @@ button,.cardRuta,.btnPrincipal,.btnAtras{transition:transform .07s ease,box-shad
   </main>
 
   <main id="vNuevo" class="vista pos oculto">
-    <div>
-      <div class="catRail" id="catRail"></div>
-      <div id="prodGrid" class="prodGrid"></div>
-    </div>
-    <aside class="ticket">
-      <h2>🧾 Ticket</h2>
-      <input id="inCliente" list="dlClientes" placeholder="👤 Cliente" autocomplete="off">
-      <datalist id="dlClientes"></datalist>
-      <div id="lineas"></div>
-      <div class="totalRow oculto" id="totalRow"><span>Total</span><strong id="total">$0</strong></div>
-      <div class="campoT"><input id="inNota" placeholder="📝 Nota (opcional)"></div>
-      <button id="btnGuardar" class="btnGuardar">Guardar pedido ✓</button>
+    <div class="pasoBar" id="pasoBar"></div>
+
+    <!-- NIVEL 1: tipo de producto -->
+    <section id="paso1" class="oculto">
+      <div id="catGrid" class="catGrid"></div>
       <button id="btnEditarCat" class="liga">Editar productos y precios</button>
-    </aside>
+      <div class="barraCarrito oculto" id="barra1">
+        <span class="cuenta">🧺 <b id="cuenta1">0</b></span>
+        <button class="btnB principal" id="btnSigue1">Continuar →</button>
+      </div>
+    </section>
+
+    <!-- NIVEL 2: descripción del producto -->
+    <section id="paso2" class="oculto">
+      <div class="tituloPaso"><button class="chipVolver" id="btnVolver1">←</button><span class="pill" id="tituloCat">🥚 Huevo</span></div>
+      <div id="prodGrid" class="prodGrid"></div>
+      <div class="barraCarrito" id="barra2">
+        <span class="cuenta">🧺 <b id="cuenta2">0</b></span>
+        <button class="btnB" id="btnMas">➕ Más productos</button>
+        <button class="btnB principal" id="btnSigue2">Continuar →</button>
+      </div>
+    </section>
+
+    <!-- NIVEL 3: cliente y nota -->
+    <section id="paso3" class="oculto">
+      <div class="tituloPaso"><button class="chipVolver" id="btnVolver2">←</button><span class="pill">👤 Cliente</span></div>
+      <div class="paso3caja">
+        <aside class="ticket">
+          <h2>🧾 Ticket</h2>
+          <input id="inCliente" list="dlClientes" placeholder="👤 Cliente" autocomplete="off">
+          <datalist id="dlClientes"></datalist>
+          <div id="lineas"></div>
+          <div class="totalRow oculto" id="totalRow"><span>Total</span><strong id="total">$0</strong></div>
+          <div class="campoT"><input id="inNota" placeholder="📝 Nota (opcional)"></div>
+          <button id="btnGuardar" class="btnGuardar">Guardar pedido ✓</button>
+        </aside>
+      </div>
+    </section>
   </main>
 
   <main id="vDashboard" class="vista ancha oculto">
@@ -379,6 +432,7 @@ if (!Array.isArray(db.pedidos)) db.pedidos = [];
 
 let draft = {};            // "productoId|presIdx" -> cantidad
 let catActiva = 'huevo';
+let paso = 1;              // nivel del asistente de nuevo pedido
 let timerSalida = null;
 
 /* ══════════ Sincronización en vivo ══════════ */
@@ -429,7 +483,7 @@ function renderRuta() {
   $('#vDashboard').classList.toggle('oculto', h !== '#dashboard');
   $('#tituloVista').textContent = h === '#pedidos' ? '🧾 Pedidos' : (h === '#nuevo' ? '➕ Nuevo pedido' : '📊 Dashboard');
   if (h === '#pedidos') renderPedidos();
-  if (h === '#nuevo') { renderRail(); renderProds(); renderTicket(); renderClientes(); }
+  if (h === '#nuevo') { if (cartCount() === 0) paso = 1; renderNuevo(); }
   if (h === '#dashboard') renderDashboard();
 }
 window.addEventListener('hashchange', () => { renderRuta(); window.scrollTo(0, 0); });
@@ -473,17 +527,41 @@ function cambiarEstado(id, est) {
   if (est === 'entregado') toast(`🚚 Pedido #${p.folio} entregado`);
 }
 
-/* ══════════ NUEVO (punto de venta) ══════════ */
-function renderRail() {
-  $('#catRail').innerHTML = Object.entries(CATS).map(([id, c]) => {
-    const enDraft = Object.keys(draft).some(k => {
-      const p = db.productos.find(x => x.id === k.split('|')[0]);
-      return p && p.cat === id && draft[k] > 0;
-    });
-    return `<button class="catBtn ${catActiva === id ? 'activa' : ''}" data-cat="${id}">
-      <span class="ci">${c.ic}${enDraft ? ' •' : ''}</span><span class="ct">${c.t}</span></button>`;
-  }).join('');
+/* ══════════ NUEVO: asistente de 3 niveles ══════════ */
+const cartCount = () => Object.values(draft).reduce((s, n) => s + n, 0);
+
+function renderNuevo() {
+  const n = cartCount();
+  $('#pasoBar').innerHTML = [['1', 'Producto'], ['2', 'Descripción'], ['3', 'Cliente']].map(([num, tx], i) =>
+    (i ? '<span class="pasoLinea"></span>' : '') +
+    `<span class="pasoDot ${paso === i + 1 ? 'actual' : ''} ${paso > i + 1 ? 'hecho' : ''}">
+      <span class="pc">${paso > i + 1 ? '✓' : num}</span><small>${tx}</small></span>`).join('');
+  $('#paso1').classList.toggle('oculto', paso !== 1);
+  $('#paso2').classList.toggle('oculto', paso !== 2);
+  $('#paso3').classList.toggle('oculto', paso !== 3);
+  if (paso === 1) {
+    $('#catGrid').innerHTML = Object.entries(CATS).map(([id, c]) => {
+      const cuantos = Object.keys(draft).reduce((s, k) => {
+        const p = db.productos.find(x => x.id === k.split('|')[0]);
+        return s + (p && p.cat === id ? draft[k] : 0);
+      }, 0);
+      return `<button class="catGrande" data-cat="${id}">${cuantos ? `<span class="cant">${cuantos}</span>` : ''}
+        <span class="ci">${c.ic}</span><span class="ct">${c.t}</span></button>`;
+    }).join('');
+    $('#barra1').classList.toggle('oculto', n === 0);
+    $('#cuenta1').textContent = n;
+  }
+  if (paso === 2) {
+    const c = CATS[catActiva] || { ic: '', t: '' };
+    $('#tituloCat').textContent = c.ic + ' ' + c.t;
+    renderProds();
+    $('#cuenta2').textContent = n;
+    $('#btnSigue2').disabled = n === 0;
+  }
+  if (paso === 3) { renderTicket(); renderClientes(); }
 }
+
+function irPaso(p) { paso = p; renderNuevo(); window.scrollTo(0, 0); }
 
 function renderProds() {
   const lista = db.productos.filter(p => p.cat === catActiva);
@@ -540,7 +618,7 @@ function guardarPedido() {
     db.pedidos.splice(i, 1);
   }
   persistir();
-  draft = {}; $('#inCliente').value = ''; $('#inNota').value = '';
+  draft = {}; paso = 1; $('#inCliente').value = ''; $('#inNota').value = '';
   location.hash = '#pedidos';
   toast(`📩 Pedido #${folio} de ${cliente} · en Solicitados`);
 }
@@ -603,7 +681,8 @@ function agregarProducto() {
   db.productos.push({ id: uid(), cat: $('#npCat').value, nombre, pres: pres.map(n => ({ n, precio: 0 })) });
   persistir();
   $('#npNombre').value = ''; $('#npPres').value = '';
-  renderModal(); renderRail(); renderProds();
+  renderModal();
+  if (location.hash === '#nuevo') renderNuevo();
   toast('Producto agregado ✓');
 }
 
@@ -628,25 +707,30 @@ $('#kanban').addEventListener('click', e => {
   const p = db.pedidos.find(x => x.id === b.dataset.sig);
   if (p) cambiarEstado(p.id, ESTADOS[ESTADOS.indexOf(p.estado) + 1]);
 });
-$('#catRail').addEventListener('click', e => {
-  const b = e.target.closest('.catBtn');
+$('#catGrid').addEventListener('click', e => {
+  const b = e.target.closest('.catGrande');
   if (!b) return;
   catActiva = b.dataset.cat;
-  renderRail(); renderProds();
+  irPaso(2);
 });
 $('#prodGrid').addEventListener('click', e => {
   const b = e.target.closest('.presChip');
   if (!b) return;
   draft[b.dataset.add] = (draft[b.dataset.add] || 0) + 1;
-  renderRail(); renderProds(); renderTicket();
+  renderNuevo();
 });
 $('#lineas').addEventListener('click', e => {
   const mas = e.target.dataset.mas, menos = e.target.dataset.menos;
   if (mas) draft[mas]++;
   else if (menos) { draft[menos]--; if (draft[menos] <= 0) delete draft[menos]; }
   else return;
-  renderRail(); renderProds(); renderTicket();
+  renderNuevo();
 });
+$('#btnVolver1').addEventListener('click', () => irPaso(1));
+$('#btnMas').addEventListener('click', () => irPaso(1));
+$('#btnVolver2').addEventListener('click', () => irPaso(2));
+$('#btnSigue1').addEventListener('click', () => irPaso(3));
+$('#btnSigue2').addEventListener('click', () => { if (cartCount()) irPaso(3); else toast('Toca al menos un producto'); });
 $('#btnGuardar').addEventListener('click', guardarPedido);
 $('#btnEditarCat').addEventListener('click', () => { renderModal(); $('#modalFondo').classList.remove('oculto'); });
 $('#btnCerrarModal').addEventListener('click', () => $('#modalFondo').classList.add('oculto'));
@@ -659,7 +743,8 @@ $('#listaProd').addEventListener('change', e => {
   const p = db.productos.find(x => x.id === pid);
   if (p && p.pres[Number(idx)]) {
     p.pres[Number(idx)].precio = Math.max(0, Number(e.target.value) || 0);
-    persistir(); renderProds(); renderTicket();
+    persistir();
+    if (location.hash === '#nuevo') renderNuevo();
   }
 });
 $('#listaProd').addEventListener('click', e => {
@@ -669,7 +754,8 @@ $('#listaProd').addEventListener('click', e => {
   if (p && confirm(`¿Quitar «${p.nombre}» de la lista de productos?`)) {
     db.productos = db.productos.filter(x => x.id !== id);
     for (const k of Object.keys(draft)) if (k.startsWith(id + '|')) delete draft[k];
-    persistir(); renderModal(); renderRail(); renderProds(); renderTicket();
+    persistir(); renderModal();
+    if (location.hash === '#nuevo') renderNuevo();
   }
 });
 
