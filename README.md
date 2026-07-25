@@ -1,20 +1,30 @@
-# Casa Muñoz · Pedidos
+# Casa Muñoz · Gestor de Pedidos
 
-Programa sencillo para la bodega de huevo **Casa Muñoz** (Central de Abasto, CDMX).
-Hace dos cosas, y las hace rápido:
+Gestor para la bodega de huevo **Casa Muñoz** (Central de Abasto, CDMX), con el estilo
+del letrero de la casa: crema, café y amarillo yema.
 
-1. **Nuevo pedido** — escribe el cliente y toca los productos para armar el pedido.
-2. **Pizarrón** — los pedidos pendientes en fila, con cronómetro. Verde al empezar,
-   naranja a los 6 minutos, rojo cuando pasa de 10. Un toque en **✓ Entregado** y se va
-   a la lista de entregados del día (con opción de regresarlo).
+## Las tres pantallas
 
-Los productos y precios se cambian dentro del mismo programa («Editar productos»).
+| Ruta | Qué es |
+|---|---|
+| `#inicio` | La bifurcación: **Pedidos** o **Dashboard** |
+| `#pedidos` | Lista numerada del día. Botón **➕ Nuevo pedido** siempre fijo arriba. Cada pedido trae sus 4 botones de estado: *Solicitado → En proceso → Terminado → Entregado* |
+| `#dashboard` | Tablero **Kanban** de 4 columnas. Los más próximos a salir, arriba. Un **Entregado** pasa a su columna, se despide 3 segundos y desaparece; la columna lleva la cuenta del día |
 
-## Cómo usarlo
+Un pedido **Entregado** se pone gris y bloqueado en la lista de Pedidos.
 
-- **En internet:** abre la página del programa (GitHub Pages) desde el teléfono,
-  la tablet o la laptop.
-- **Sin internet:** descarga `index.html` y ábrelo con doble clic.
+## Las dos tabletas
 
-Todo se guarda en el navegador del aparato donde lo uses. No necesita instalarse
-ni pagar nada.
+- Tableta del mostrador: abre `…/index.html#pedidos`
+- Tableta de la nave: abre `…/index.html#dashboard`
+
+Dos pestañas del mismo aparato se sincronizan solas al instante. Para que **aparatos
+distintos** compartan los pedidos en vivo, se conecta Firebase (gratis): la config se
+pega en `FIREBASE_CONFIG` dentro de `index.html`.
+
+## Detalles
+
+- Productos y precios editables dentro del programa («Editar productos»), por categoría
+  **Huevo** y **Harina**. Si un precio está en 0, no se muestra.
+- Las fuentes van incrustadas en el archivo: funciona hasta sin internet.
+- Sin nube conectada, los datos viven en el navegador de cada aparato.
