@@ -196,6 +196,26 @@ main.vista.ancha{max-width:1500px}
 
 /* ================= TOAST ================= */
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--cafe);color:var(--crema);font-weight:800;padding:13px 20px;border-radius:999px;border:3px solid var(--yema);z-index:99;font-size:14.5px;max-width:88vw;text-align:center}
+
+/* ================= PULIDO: unidad visual ================= */
+html{-webkit-tap-highlight-color:transparent}
+body{background-image:radial-gradient(rgba(59,35,20,.045) 1.2px,transparent 1.3px);background-size:24px 24px}
+button,.cardRuta,.btnPrincipal,.btnAtras{transition:transform .07s ease,box-shadow .07s ease,filter .12s ease}
+.chipEst:active,.btnSig:active,.btnX:active,.step button:active{transform:translate(2px,2px)}
+@media(hover:hover){
+  .cardRuta:hover,.btnPrincipal:hover,.catBtn:hover,.presChip:hover,.chipEst:hover,.btnSig:hover,.btnGuardar:hover,.btnAgregar:hover,.btnCerrar:hover,.btnAtras:hover{filter:brightness(1.05)}
+  .liga:hover{color:var(--cafe)}
+}
+.vista,#vInicio{animation:aparecer .2s ease}
+@keyframes aparecer{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.toast{animation:toastIn .22s ease}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+.colVacia,.vacioTicket{border:2.5px dashed var(--cafe-suave);border-radius:12px;margin-top:12px;padding:18px 8px;background:rgba(255,255,255,.5)}
+.kanban::-webkit-scrollbar{height:10px}
+.kanban::-webkit-scrollbar-thumb{background:var(--cafe-suave);border-radius:999px}
+.kanban::-webkit-scrollbar-track{background:var(--durazno);border-radius:999px}
+.col{background:rgba(255,255,255,.4)}
+.pedidoCard,.tarK,.prodTile,.ticket,.cardRuta,.filaProd{background:linear-gradient(180deg,#FFFFFF,#FFFDF4)}
 </style>
 </head>
 <body>
@@ -407,7 +427,7 @@ function renderRuta() {
   $('#vPedidos').classList.toggle('oculto', h !== '#pedidos');
   $('#vNuevo').classList.toggle('oculto', h !== '#nuevo');
   $('#vDashboard').classList.toggle('oculto', h !== '#dashboard');
-  $('#tituloVista').textContent = h === '#pedidos' ? 'Pedidos' : (h === '#nuevo' ? 'Nuevo pedido' : 'Dashboard');
+  $('#tituloVista').textContent = h === '#pedidos' ? '🧾 Pedidos' : (h === '#nuevo' ? '➕ Nuevo pedido' : '📊 Dashboard');
   if (h === '#pedidos') renderPedidos();
   if (h === '#nuevo') { renderRail(); renderProds(); renderTicket(); renderClientes(); }
   if (h === '#dashboard') renderDashboard();
