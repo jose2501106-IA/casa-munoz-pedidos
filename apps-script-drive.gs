@@ -15,6 +15,12 @@ var COLS = ['Fecha', 'Corte', 'Folio', 'Cliente', 'Productos', 'Piezas', 'Total'
 var ETIQ = { solicitado: 'Solicitado', proceso: 'En proceso',
              terminado: 'Terminado', entregado: 'Entregado' };
 
+/** Prueba de conexión: el botón «Probar» de la app llama aquí. */
+function doGet(e) {
+  hoja_('Pedidos', COLS);
+  return ContentService.createTextOutput('ok — Casa Muñoz conectado');
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);

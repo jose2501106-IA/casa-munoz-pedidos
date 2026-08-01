@@ -255,6 +255,27 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--cafe);color:var(--crema);font-weight:800;padding:14px 22px;border-radius:999px;border:3px solid var(--yema);z-index:99;font-size:15px;max-width:88vw;text-align:center;animation:toastIn .22s ease}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 .nubeChip{position:fixed;right:12px;bottom:12px;background:var(--cafe);color:var(--crema);border-radius:999px;padding:6px 14px;font-weight:800;font-size:12px;z-index:60;opacity:.9}
+
+/* ================= CONEXIONES ================= */
+.cnxCaja{max-width:660px;margin:0 auto;width:100%}
+.cnxBloque{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:18px 16px;margin-bottom:18px}
+.cnxBloque h3{margin:0 0 3px;font-size:18px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.cnxBloque p.ex{margin:2px 0 12px;color:var(--cafe-2);font-weight:600;font-size:13.5px;line-height:1.45}
+.luz{border-radius:999px;padding:3px 12px;font-weight:800;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;border:2.5px solid}
+.luz.on{background:var(--verde-dim);border-color:var(--verde);color:var(--verde)}
+.luz.off{background:#EFE7DA;border-color:var(--cafe-suave);color:var(--cafe-suave)}
+textarea{width:100%;background:var(--blanco);border:3px solid var(--cafe);border-radius:13px;padding:12px 14px;color:var(--cafe);font-size:14px;font-family:var(--mono,ui-monospace,Menlo,Consolas,monospace);font-weight:600;min-height:120px;resize:vertical}
+textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
+.cnxBtns{display:flex;flex-wrap:wrap;gap:9px;margin-top:11px}
+.btnCnx{flex:1;min-width:130px;border:3px solid var(--cafe);border-radius:13px;background:var(--yema);color:var(--cafe);font-weight:800;font-size:15px;padding:13px 12px;cursor:pointer;box-shadow:var(--sombra-ch)}
+.btnCnx.blanco{background:var(--blanco)}
+.btnCnx:active{transform:translate(3px,3px);box-shadow:none}
+.pasosMini{background:var(--durazno);border-radius:12px;padding:11px 14px;margin:0 0 12px;font-size:13px;font-weight:700;color:var(--cafe-2);line-height:1.6}
+.pasosMini b{color:var(--cafe)}
+.pasosMini a{text-decoration:underline;color:var(--azul)}
+.codigoCopia{background:var(--cafe);color:var(--yema);border-radius:12px;padding:11px 13px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;margin-top:11px;max-height:88px;overflow:auto}
+.btnAjustes{position:fixed;right:14px;bottom:14px;width:52px;height:52px;border-radius:50%;background:var(--blanco);border:3px solid var(--cafe);box-shadow:var(--sombra-ch);font-size:22px;cursor:pointer;z-index:40;display:grid;place-items:center}
+.btnAjustes:active{transform:translate(3px,3px);box-shadow:none}
 </style>
 </head>
 <body>
@@ -273,6 +294,63 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
   <div class="franjaYema"><h2>GESTOR DE PEDIDOS</h2></div>
   <div class="toldo"></div>
   <div class="pantalla"><div class="diaCard" id="diaCard"></div></div>
+  <footer class="lema">🥚 ¡Calidad y frescura todos los días! 🥚</footer>
+  <button class="btnAjustes hoverable" id="btnAjustes" aria-label="Conexiones" title="Conexiones">⚙️</button>
+</section>
+
+<!-- ============ CONEXIONES ============ -->
+<section id="vAjustes" class="oculto">
+  <header class="topBar">
+    <a href="#inicio" class="btnAtras hoverable" aria-label="Regresar">←</a>
+    <div class="marcaMini">CASA MUÑOZ</div>
+    <div class="tituloVista">⚙️ Conexiones</div>
+  </header>
+  <div class="toldo"></div>
+  <div class="pantalla">
+    <div class="cnxCaja">
+
+      <div class="cnxBloque">
+        <h3>📋 Copiar a otra tableta <span class="luz off" id="luzCodigo">—</span></h3>
+        <p class="ex">Si ya configuraste una tableta, aquí sale un código corto. Pégalo en la caja de abajo de las otras tabletas y quedan iguales de un jalón.</p>
+        <div class="cnxBtns"><button class="btnCnx blanco" id="btnCopiarCfg">📋 Copiar mi configuración</button></div>
+        <div class="codigoCopia oculto" id="codigoCfg"></div>
+      </div>
+
+      <div class="cnxBloque">
+        <h3>☁️ Nube · tabletas y TV en vivo <span class="luz off" id="luzNube">Sin conectar</span></h3>
+        <p class="ex">Hace que el mostrador, la nave y la TV compartan los mismos pedidos al instante.</p>
+        <div class="pasosMini">
+          <b>1.</b> Entra a <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> y crea un proyecto (<b>casa-munoz</b>).<br>
+          <b>2.</b> Menú <b>Compilación → Realtime Database → Crear base de datos</b> → Estados Unidos → <b>Modo de prueba</b>.<br>
+          <b>3.</b> ⚙️ <b>Configuración del proyecto → Tus apps →</b> icono <b>&lt;/&gt;</b> → registra la app.<br>
+          <b>4.</b> Copia el bloque <b>firebaseConfig = {…}</b> completo y pégalo aquí:
+        </div>
+        <textarea id="txtFirebase" placeholder="const firebaseConfig = {&#10;  apiKey: &quot;AIza…&quot;,&#10;  databaseURL: &quot;https://casa-munoz-default-rtdb.firebaseio.com&quot;,&#10;  …&#10;};"></textarea>
+        <div class="cnxBtns">
+          <button class="btnCnx" id="btnGuardarNube">Conectar nube</button>
+          <button class="btnCnx blanco" id="btnQuitarNube">Quitar</button>
+        </div>
+      </div>
+
+      <div class="cnxBloque">
+        <h3>📊 Excel en tu Drive <span class="luz off" id="luzExcel">Sin conectar</span></h3>
+        <p class="ex">Cada pedido y cada cambio se escriben solos en tu hoja de Google, con todos los tiempos.</p>
+        <div class="pasosMini">
+          <b>1.</b> Abre <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> y nómbrala <b>Casa Muñoz — Base de datos</b>.<br>
+          <b>2.</b> <b>Extensiones → Apps Script</b>, borra todo y pega el código que te pasó Claude.<br>
+          <b>3.</b> 💾 Guardar → <b>Implementar → Nueva implementación</b> → ⚙️ → <b>Aplicación web</b>.<br>
+          <b>4.</b> Ejecutar como <b>Yo</b> · Acceso: <b>Cualquier usuario</b> → <b>Implementar</b> → autoriza.<br>
+          <b>5.</b> Copia la URL que termina en <b>/exec</b> y pégala aquí:
+        </div>
+        <input id="txtSheets" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+        <div class="cnxBtns">
+          <button class="btnCnx" id="btnGuardarExcel">Conectar Excel</button>
+          <button class="btnCnx blanco" id="btnProbarExcel">Probar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
   <footer class="lema">🥚 ¡Calidad y frescura todos los días! 🥚</footer>
 </section>
 
@@ -388,9 +466,17 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
    Rutas: #inicio (iniciar día) · #menu · #pedidos · #nuevo · #dashboard
    ══════════════════════════════════════════════════════════ */
 
-/* ───── Conexiones (se pegan aquí cuando José las mande) ───── */
-const FIREBASE_CONFIG = null;   // sincroniza tabletas y TV en vivo
-const SHEETS_URL      = null;   // Google Apps Script → Excel en su Drive
+/* ───── Conexiones: se pegan en la pantalla ⚙️ de cada aparato.
+   Se guardan solo en ese aparato — nunca viajan al repositorio público. ───── */
+const KC = 'casaMunozConexiones_v1';
+function leerCfg() {
+  try { return Object.assign({ firebase: null, sheets: '' }, JSON.parse(localStorage.getItem(KC) || '{}')); }
+  catch (e) { return { firebase: null, sheets: '' }; }
+}
+function guardarCfg(c) { try { localStorage.setItem(KC, JSON.stringify(c)); } catch (e) {} }
+let CFG = leerCfg();
+const FIREBASE_CONFIG = CFG.firebase;   // sincroniza tabletas y TV en vivo
+const SHEETS_URL      = CFG.sheets;     // Google Apps Script → Excel en su Drive
 
 /* ───── Utilidades ───── */
 const $ = s => document.querySelector(s);
@@ -574,13 +660,15 @@ const RUTAS_APP = ['#pedidos', '#nuevo', '#dashboard'];
 function renderRuta() {
   let h = location.hash || '#inicio';
   const corte = corteAbierto();
-  if (!corte && h !== '#inicio') { location.hash = '#inicio'; return; }
+  if (!corte && h !== '#inicio' && h !== '#ajustes') { location.hash = '#inicio'; return; }
   if (h === '#menu' && !corte) h = '#inicio';
 
   $('#vInicio').classList.toggle('oculto', h !== '#inicio');
+  $('#vAjustes').classList.toggle('oculto', h !== '#ajustes');
   $('#vMenu').classList.toggle('oculto', h !== '#menu');
   $('#vApp').classList.toggle('oculto', !RUTAS_APP.includes(h));
 
+  if (h === '#ajustes') { renderAjustes(); return; }
   if (h === '#inicio') { renderInicio(); return; }
   const et = corte ? `📅 ${fechaLarga(corte.inicio)} · desde ${hhmm(corte.inicio)}` : '';
   $('#chipDiaMenu').textContent = et;
@@ -630,6 +718,101 @@ function renderInicio() {
   const bs = $('#btnSeguir'); if (bs) bs.onclick = () => { location.hash = '#menu'; };
   const bc2 = $('#btnCerrarDia'); if (bc2) bc2.onclick = () => cerrarDia(false);
   const bh = $('#btnHistorial'); if (bh) bh.onclick = verHistorial;
+}
+
+/* ───── ⚙️ Conexiones ───── */
+function parseFirebase(txt) {
+  const t = String(txt || '').trim();
+  if (!t) return null;
+  if (t.startsWith('CM1:')) {                       // código corto de otra tableta
+    try { return JSON.parse(decodeURIComponent(escape(atob(t.slice(4))))); } catch (e) { return null; }
+  }
+  const i = t.indexOf('{'), j = t.lastIndexOf('}');
+  if (i < 0 || j <= i) return null;
+  let s = t.slice(i, j + 1)
+    .replace(/^[ \t]*\/\/.*$/gm, '')                // comentarios (sin tocar los https://)
+    .replace(/([,{]\s*)([A-Za-z_$][\w$]*)\s*:/g, '$1"$2":')  // comillas a las llaves
+    .replace(/'/g, '"')
+    .replace(/,(\s*[}\]])/g, '$1');                 // comas sobrantes
+  try { const o = JSON.parse(s); return (o && o.apiKey) ? o : null; } catch (e) { return null; }
+}
+
+function renderAjustes() {
+  const c = leerCfg();
+  const nube = !!(c.firebase && c.firebase.apiKey);
+  const excel = !!c.sheets;
+  $('#luzNube').textContent = nube ? '🟢 Conectada' : 'Sin conectar';
+  $('#luzNube').className = 'luz ' + (nube ? 'on' : 'off');
+  $('#luzExcel').textContent = excel ? '🟢 Conectado' : 'Sin conectar';
+  $('#luzExcel').className = 'luz ' + (excel ? 'on' : 'off');
+  $('#luzCodigo').textContent = (nube || excel) ? 'Listo' : 'Nada que copiar';
+  $('#luzCodigo').className = 'luz ' + ((nube || excel) ? 'on' : 'off');
+  if (!$('#txtFirebase').value && nube) $('#txtFirebase').value = JSON.stringify(c.firebase, null, 2);
+  if (!$('#txtSheets').value && excel) $('#txtSheets').value = c.sheets;
+}
+
+function guardarNube() {
+  const o = parseFirebase($('#txtFirebase').value);
+  if (!o) { toast('No entendí esa configuración. Pega el bloque completo firebaseConfig = { … }'); return; }
+  const cfgNueva = o.firebase || o;                 // por si vino el código corto
+  if (!cfgNueva.databaseURL) {
+    toast('Falta databaseURL: crea primero la Realtime Database y vuelve a copiar la configuración');
+    return;
+  }
+  const c = leerCfg();
+  c.firebase = cfgNueva;
+  if (o.sheets) c.sheets = o.sheets;                // el código corto trae ambas
+  guardarCfg(c);
+  toast('☁️ Nube conectada · recargando…');
+  setTimeout(() => location.reload(), 900);
+}
+
+function quitarNube() {
+  const c = leerCfg();
+  c.firebase = null;
+  guardarCfg(c);
+  $('#txtFirebase').value = '';
+  toast('Nube desconectada · recargando…');
+  setTimeout(() => location.reload(), 900);
+}
+
+function guardarExcel() {
+  const u = $('#txtSheets').value.trim();
+  if (!/^https:\/\/script\.google\.com\/.*\/exec$/.test(u)) {
+    toast('La URL debe empezar con https://script.google.com y terminar en /exec');
+    return;
+  }
+  const c = leerCfg();
+  c.sheets = u;
+  guardarCfg(c);
+  toast('📊 Excel conectado · recargando…');
+  setTimeout(() => location.reload(), 900);
+}
+
+async function probarExcel() {
+  const u = $('#txtSheets').value.trim() || leerCfg().sheets;
+  if (!u) { toast('Primero pega la URL que termina en /exec'); return; }
+  toast('Probando…');
+  try {
+    const r = await fetch(u + (u.includes('?') ? '&' : '?') + 'prueba=1', { method: 'GET' });
+    const t = (await r.text()).toLowerCase();
+    toast(t.includes('ok') ? '✅ ¡Conectado! Revisa tu hoja de Google' : '⚠️ Respondió, pero raro: ' + t.slice(0, 40));
+  } catch (e) {
+    toast('⚠️ No pude confirmarlo desde aquí. Guárdala igual: los pedidos se envían de todos modos.');
+  }
+}
+
+function copiarCfg() {
+  const c = leerCfg();
+  if (!c.firebase && !c.sheets) { toast('Todavía no hay nada configurado en esta tableta'); return; }
+  const codigo = 'CM1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ firebase: c.firebase, sheets: c.sheets }))));
+  const caja = $('#codigoCfg');
+  caja.textContent = codigo;
+  caja.classList.remove('oculto');
+  if (navigator.clipboard) navigator.clipboard.writeText(codigo).then(
+    () => toast('📋 Copiado · pégalo en la otra tableta'),
+    () => toast('Copia el código de abajo a mano'));
+  else toast('Copia el código de abajo a mano');
 }
 
 function verHistorial() {
@@ -930,6 +1113,12 @@ $('#btnVolver2').addEventListener('click', () => irPaso(2));
 $('#btnSigue1').addEventListener('click', () => irPaso(3));
 $('#btnSigue2').addEventListener('click', () => { if (cartCount()) irPaso(3); else toast('Toca al menos un producto'); });
 $('#btnGuardar').addEventListener('click', guardarPedido);
+$('#btnAjustes').addEventListener('click', () => { location.hash = '#ajustes'; });
+$('#btnGuardarNube').addEventListener('click', guardarNube);
+$('#btnQuitarNube').addEventListener('click', quitarNube);
+$('#btnGuardarExcel').addEventListener('click', guardarExcel);
+$('#btnProbarExcel').addEventListener('click', probarExcel);
+$('#btnCopiarCfg').addEventListener('click', copiarCfg);
 $('#btnExcel').addEventListener('click', descargarExcel);
 $('#btnCerrarDia2').addEventListener('click', () => cerrarDia(false));
 $('#btnEditarCat').addEventListener('click', () => { renderModal(); $('#modalFondo').classList.remove('oculto'); });
