@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Casa Muñoz · Gestor de Pedidos</title>
-<meta name="theme-color" content="#3B2314">
+<meta name="theme-color" content="#2E3320">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥚</text></svg>">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icono-192.png">
@@ -20,20 +20,34 @@
 </style>
 <style>
 :root{
-  --crema:#FAF3E3; --blanco:#FFFFFF;
-  --cafe:#3B2314; --cafe-2:#6B4A2F; --cafe-suave:#9A7B60;
-  --yema:#F5A623; --durazno:#F7DFC3;
-  --verde:#2F8B57; --verde-dim:#E3F1E8;
-  --naranja:#E07B2F; --azul:#3F7CB8; --azul-dim:#E4EEF7;
-  --rojo:#C94F44; --rojo-dim:#FBE9E7; --gris:#B9AF9F;
-  /* Estados — paleta verificada con validador de daltonismo (protán, deután, tritán)
-     sobre el fondo crema. Orden de columnas escogido para que verde y naranja
-     nunca queden pegados, que es el par que se confunde. */
-  --e1:#2166A8; --e1-suave:#E4EDF6; --e1-borde:#7FA9CE;   /* Solicitado  */
-  --e2:#CC5500; --e2-suave:#FBE9DC; --e2-borde:#E2A578;   /* En proceso  */
-  --e3:#B02A87; --e3-suave:#F8E3F1; --e3-borde:#D98CC0;   /* Terminado   */
-  --e4:#357A38; --e4-suave:#E4F0E4; --e4-borde:#8CBA8E;   /* Entregado   */
-  --urgente:#B3261E; --urgente-suave:#FBE6E4;
+  /* ══ Paleta de José: FBE8CE · E4DFB5 · C3CC9B · 9AB17A ══
+     Sus cuatro colores son una base preciosa pero NO sirven de colores de
+     estado: el validador de daltonismo los reprueba (ni con visión perfecta
+     se distinguen entre sí). Así que van de superficies, y los acentos se
+     derivaron aparte y sí pasan todas las verificaciones. */
+  --crema:#FBE8CE;        /* fondo                */
+  --arena:#E4DFB5;        /* superficie secundaria*/
+  --salvia:#C3CC9B;       /* líneas y acentos     */
+  --hoja:#9AB17A;         /* verde de la casa     */
+  --blanco:#FFFDF6;       /* tarjetas, blanco cálido */
+  --durazno:#E4DFB5;      /* relleno suave        */
+
+  /* Tinta: verde muy oscuro. Sobre el crema da 12:1 de contraste. */
+  --cafe:#2E3320; --cafe-2:#5A5F42; --cafe-suave:#8A8F6E; --gris:#B0B394;
+
+  /* Acción principal: el verde de su paleta, en versión con cuerpo */
+  --yema:#9AB17A; --verde:#4C7F35; --verde-dim:#E7EEDC;
+  --naranja:#C25A18; --azul:#2A6198; --azul-dim:#E3EAF2;
+  --rojo:#B3261E; --rojo-dim:#F7E4DE;
+
+  /* Estados — validados sobre el fondo #FBE8CE (separación para protán,
+     deután y tritán, contraste ≥3:1). El orden evita pegar verde con naranja. */
+  --e1:#2A6198; --e1-suave:#E3EAF2; --e1-borde:#8FAAC6;   /* Solicitado */
+  --e2:#C25A18; --e2-suave:#F7E6D6; --e2-borde:#DDA274;   /* En proceso */
+  --e3:#93316E; --e3-suave:#F2E1EC; --e3-borde:#C88FB4;   /* Terminado  */
+  --e4:#4C7F35; --e4-suave:#E7EEDC; --e4-borde:#9BBA85;   /* Entregado  */
+  --urgente:#B3261E; --urgente-suave:#F7E4DE;
+
   --slab:"Alfa Slab One","Baloo 2",serif;
   --font:"Baloo 2",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   --sombra:4px 4px 0 var(--cafe);
@@ -43,7 +57,7 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--crema);color:var(--cafe);font-family:var(--font);font-size:15.5px;line-height:1.35;
-  background-image:radial-gradient(rgba(59,35,20,.045) 1.2px,transparent 1.3px);background-size:24px 24px}
+  background-image:radial-gradient(rgba(46,51,32,.055) 1.2px,transparent 1.3px);background-size:24px 24px}
 button{font-family:var(--font)}
 a{color:inherit;text-decoration:none}
 .oculto{display:none!important}
@@ -68,7 +82,7 @@ button,a.btn{transition:transform .07s ease,box-shadow .07s ease,filter .12s eas
 .pantalla{max-width:1000px;margin:0 auto;padding:30px 20px 40px;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 250px)}
 .lema{text-align:center;background:var(--cafe);color:var(--crema);font-weight:700;padding:11px;font-size:14.5px}
 
-.diaCard{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:24px;box-shadow:var(--sombra);padding:34px 22px;text-align:center;max-width:560px;margin:0 auto;width:100%}
+.diaCard{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:24px;box-shadow:var(--sombra);padding:34px 22px;text-align:center;max-width:560px;margin:0 auto;width:100%}
 .diaCard .fechaHoy{font-weight:800;color:var(--cafe-2);font-size:15px;letter-spacing:.05em;text-transform:capitalize}
 .btnDia{display:block;width:100%;margin-top:20px;background:var(--yema);border:3px solid var(--cafe);border-radius:18px;box-shadow:var(--sombra);color:var(--cafe);font-weight:800;font-size:clamp(19px,3vw,25px);padding:24px 14px;cursor:pointer}
 .btnDia:active{transform:translate(4px,4px);box-shadow:none}
@@ -85,7 +99,7 @@ button,a.btn{transition:transform .07s ease,box-shadow .07s ease,filter .12s eas
 /* ================= MENÚ (bifurcación) ================= */
 .menuGrid{display:grid;gap:22px;grid-template-columns:1fr}
 @media(min-width:620px){.menuGrid{grid-template-columns:1fr 1fr}}
-.cardRuta{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:22px;box-shadow:var(--sombra);padding:38px 18px;min-height:230px}
+.cardRuta{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:22px;box-shadow:var(--sombra);padding:38px 18px;min-height:230px}
 .cardRuta:active{transform:translate(4px,4px);box-shadow:none}
 .cardRuta .icono{font-size:60px;line-height:1}
 .cardRuta .pill{display:inline-block;background:var(--yema);border:3px solid var(--cafe);border-radius:999px;padding:9px 32px;font-weight:800;font-size:24px;margin-top:16px}
@@ -103,7 +117,7 @@ main.vista{max-width:900px;margin:0 auto;padding:0 16px 80px}
 .barraNueva{position:sticky;top:0;z-index:15;background:var(--crema);padding:14px 0 12px;border-bottom:3px dashed var(--durazno)}
 .btnPrincipal{display:block;width:100%;text-align:center;background:var(--yema);border:3px solid var(--cafe);border-radius:16px;box-shadow:var(--sombra);color:var(--cafe);font-weight:800;font-size:20px;padding:16px 10px;cursor:pointer}
 .btnPrincipal:active{transform:translate(4px,4px);box-shadow:none}
-.pedidoCard{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:16px;box-shadow:var(--sombra);padding:13px 14px;margin-top:16px;display:flex;gap:12px}
+.pedidoCard{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:16px;box-shadow:var(--sombra);padding:13px 14px;margin-top:16px;display:flex;gap:12px}
 .folio{flex:none;width:46px;height:46px;border-radius:50%;background:var(--cafe);color:var(--yema);display:grid;place-items:center;font-family:var(--slab);font-size:17px}
 .pedInfo{flex:1;min-width:0}
 .pedInfo>b{font-size:17.5px;display:block;margin-bottom:2px}
@@ -140,7 +154,7 @@ main.vista.pos{max-width:1100px}
 .pasoLinea{flex:none;width:34px;border-top:3px dashed var(--cafe-suave);margin-top:22px}
 .catGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;padding-top:6px}
 @media(min-width:760px){.catGrid{grid-template-columns:repeat(4,1fr);align-content:center;min-height:calc(100vh - 300px)}}
-.catGrande{position:relative;background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:22px;box-shadow:var(--sombra);padding:clamp(20px,4vh,40px) 12px;cursor:pointer;text-align:center}
+.catGrande{position:relative;background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:22px;box-shadow:var(--sombra);padding:clamp(20px,4vh,40px) 12px;cursor:pointer;text-align:center}
 .catGrande .ci{display:block;font-size:clamp(44px,7vh,68px);line-height:1.05}
 .catGrande .ct{font-weight:800;font-size:clamp(17px,2.4vh,22px);margin-top:8px;display:block}
 .catGrande:active{transform:translate(4px,4px);box-shadow:none}
@@ -150,7 +164,7 @@ main.vista.pos{max-width:1100px}
 .chipVolver{border:2.5px solid var(--cafe);background:var(--blanco);border-radius:999px;padding:8px 17px;font-weight:800;font-size:16px;cursor:pointer;box-shadow:var(--sombra-ch)}
 .chipVolver:active{transform:translate(2px,2px);box-shadow:none}
 .prodGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.prodTile{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:18px;box-shadow:var(--sombra-ch);padding:14px}
+.prodTile{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:18px;box-shadow:var(--sombra-ch);padding:14px}
 .prodTile>b{display:block;font-size:17px;margin-bottom:11px;text-align:center}
 .presRow{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
 .presChip{position:relative;background:var(--durazno);border:2.5px solid var(--cafe);border-radius:13px;padding:10px 15px;font-weight:800;font-size:15px;cursor:pointer;color:var(--cafe);display:flex;flex-direction:column;align-items:center;line-height:1.15}
@@ -165,7 +179,7 @@ main.vista.pos{max-width:1100px}
 .barraCarrito .btnB.principal{background:var(--yema);border-color:var(--yema);color:var(--cafe)}
 .barraCarrito .btnB:disabled{opacity:.45;cursor:default}
 .paso3caja{max-width:600px;margin:0 auto}
-.ticket{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:18px;box-shadow:var(--sombra);padding:16px}
+.ticket{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:18px;box-shadow:var(--sombra);padding:16px}
 .ticket h2{margin:0 0 8px;font-family:var(--slab);font-weight:400;font-size:18px;text-align:center;border-bottom:3px dashed var(--durazno);padding-bottom:9px}
 input,select{width:100%;background:var(--blanco);border:3px solid var(--cafe);border-radius:13px;padding:12px 14px;color:var(--cafe);font-size:16px;font-family:var(--font);font-weight:600}
 input::placeholder{color:var(--gris)}
@@ -189,7 +203,7 @@ input:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid 
 main.vista.ancha{max-width:1600px;padding-bottom:40px}
 .kpiRow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 0 6px}
 @media(max-width:700px){.kpiRow{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:16px;box-shadow:var(--sombra-ch);padding:12px 10px;text-align:center}
+.kpi{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:16px;box-shadow:var(--sombra-ch);padding:12px 10px;text-align:center}
 .kpi .n{font-family:var(--slab);font-size:clamp(26px,3.4vw,38px);line-height:1.05}
 .kpi small{display:block;font-weight:800;font-size:11.5px;color:var(--cafe-2);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
 .kpi.verde .n{color:var(--verde)}
@@ -205,7 +219,7 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
 .filaNum.top{background:var(--rojo);color:#fff}
 .celda{background:rgba(255,255,255,.45);border-radius:12px;min-height:74px}
 .celda.llena{background:transparent}
-.tarK{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:14px;box-shadow:var(--sombra-ch);padding:11px 12px;height:100%}
+.tarK{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:14px;box-shadow:var(--sombra-ch);padding:11px 12px;height:100%}
 .tarK .tkTop{display:flex;align-items:center;gap:8px}
 .tarK .folio{width:34px;height:34px;font-size:13px}
 .tarK .tkTop b{font-size:15.5px;flex:1;min-width:0}
@@ -250,7 +264,7 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
 @media(min-width:640px){.modalCaja{border-radius:20px;box-shadow:var(--sombra)}}
 .modalCaja h2{margin:0 0 2px;font-family:var(--slab);font-size:20px;font-weight:400}
 .modalCaja .ayuda{margin:4px 0 10px;font-weight:600;color:var(--cafe-2);font-size:13.5px}
-.filaProd{background:linear-gradient(180deg,#FFF,#FFFDF4);border:2.5px solid var(--cafe);border-radius:12px;padding:9px 11px;margin-top:9px}
+.filaProd{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:2.5px solid var(--cafe);border-radius:12px;padding:9px 11px;margin-top:9px}
 .filaProd .fpTop{display:flex;align-items:center;gap:8px}
 .filaProd .nom{flex:1;font-weight:800;font-size:14.5px;min-width:0}
 .filaProd .nom small{color:var(--cafe-suave);font-weight:700}
@@ -283,7 +297,7 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
 .est4[data-e="entregado"] {background:var(--e4-suave);border-color:var(--e4);color:var(--e4)}
 
 .listaT{display:flex;flex-direction:column;gap:14px;margin-top:12px}
-.filaP{display:flex;gap:12px;align-items:stretch;background:linear-gradient(180deg,#FFF,#FFFDF4);border:4px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:12px}
+.filaP{display:flex;gap:12px;align-items:stretch;background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:4px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:12px}
 .filaP[data-e="solicitado"]{border-color:var(--e1)}
 .filaP[data-e="proceso"]   {border-color:var(--e2)}
 .filaP[data-e="terminado"] {border-color:var(--e3)}
@@ -359,9 +373,52 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
   .pasoP.actual{width:62px;height:62px}
 }
 
+
+/* ================= UX: dibujos en la captura ================= */
+.catGrande .ci{display:flex;justify-content:center;line-height:1}
+.prodCab{display:flex;align-items:center;gap:9px;justify-content:center;margin-bottom:11px}
+.prodCab b{font-size:17px;text-align:left;line-height:1.15}
+.presChip{padding:9px 13px 8px;gap:1px}
+.presChip .pic{margin-bottom:1px}
+.linea{gap:10px}
+.linea .pic{flex:none}
+.renglonPed{display:flex;align-items:center;gap:7px;padding:2px 0}
+.filaProd .fpTop{gap:10px}
+
+/* ================= UX: pulido general ================= */
+.topBar{box-shadow:0 3px 0 rgba(46,51,32,.12)}
+.franjaYema{background:var(--hoja)}
+.toldo{background:
+  radial-gradient(circle at 27px -8px, var(--hoja) 0 22px, transparent 23px),
+  radial-gradient(circle at 27px -8px, var(--cafe) 0 25px, transparent 26px);
+  background-size:54px 28px;background-repeat:repeat-x}
+.marca{color:var(--hoja)}
+.pillFresco{background:var(--hoja);border-color:var(--crema)}
+.btnPrincipal,.btnDia,.btnGuardar,.btnAgregar,.btnCnx,.cardRuta .pill,.tituloPaso .pill,.catBtn.activa{
+  background:var(--hoja)}
+.barraCarrito .btnB.principal{background:var(--hoja);border-color:var(--hoja)}
+.folio,.filaNum,.cantG,.ficha .cantG{background:var(--cafe);color:var(--hoja)}
+.est4 .n4{font-variant-numeric:tabular-nums}
+.col,.celda{background:rgba(255,253,246,.55)}
+input,select,textarea{background:var(--blanco)}
+.presChip{background:var(--arena)}
+.presChip.sel{background:var(--hoja)}
+.step button{background:var(--arena)}
+.miniKpi{background:var(--arena)}
+.pasosMini{background:var(--arena)}
+.btnX{background:var(--arena)}
+.btnAtras{background:var(--hoja);border-color:var(--crema)}
+.chipDia{background:var(--hoja);color:var(--cafe)}
+.marcaMini{color:var(--hoja)}
+.toast{border-color:var(--hoja)}
+.notaPed{background:var(--azul-dim);color:var(--azul)}
+.seccionGris{color:var(--cafe-suave)}
+/* foco visible y consistente en toda la app */
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+
 /* ================= CONEXIONES ================= */
 .cnxCaja{max-width:660px;margin:0 auto;width:100%}
-.cnxBloque{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:18px 16px;margin-bottom:18px}
+.cnxBloque{background:linear-gradient(180deg,#FFFDF6,#FBF6E6);border:3px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:18px 16px;margin-bottom:18px}
 .cnxBloque h3{margin:0 0 3px;font-size:18px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .cnxBloque p.ex{margin:2px 0 12px;color:var(--cafe-2);font-weight:600;font-size:13.5px;line-height:1.45}
 .luz{border-radius:999px;padding:3px 12px;font-weight:800;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;border:2.5px solid}
@@ -584,7 +641,7 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
 'use strict';
 
 /* ══════ PICTOGRAMAS (dibujos provisionales) ══════ */
-const TRAZO = '#3B2314';
+const TRAZO = '#2E3320';
 
 /* ---------- PRODUCTOS ---------- */
 const DIBUJO_PRODUCTO = {
@@ -1272,7 +1329,8 @@ function verHistorial() {
 }
 
 /* ───── 1 · Lista de pedidos ───── */
-const itemsTxt = p => p.items.map(i => `<b>${i.cant} ×</b> ${esc(i.pres)} · ${esc(i.nombre)}`).join('<br>');
+const itemsTxt = p => p.items.map(i =>
+  `<span class="renglonPed">${pictoProducto(picDe(i), 26)}<b>${i.cant} ×</b> ${esc(i.pres)} · ${esc(i.nombre)}</span>`).join('');
 
 function cardPedido(p, gris) {
   const chips = ESTADOS.map(est =>
@@ -1337,7 +1395,7 @@ function renderNuevo() {
         return s + (p && p.cat === id ? draft[k] : 0);
       }, 0);
       return `<button class="catGrande hoverable" data-cat="${id}">${cuantos ? `<span class="cant">${cuantos}</span>` : ''}
-        <span class="ci">${c.ic}</span><span class="ct">${c.t}</span></button>`;
+        <span class="ci">${pictoProducto(PIC_CAT[id], 76)}</span><span class="ct">${c.t}</span></button>`;
     }).join('');
     $('#barra1').classList.toggle('oculto', n === 0);
     $('#cuenta1').textContent = n;
@@ -1356,11 +1414,12 @@ function irPaso(p) { paso = p; renderNuevo(); window.scrollTo(0, 0); }
 function renderProds() {
   const lista = db.productos.filter(p => p.cat === catActiva);
   $('#prodGrid').innerHTML = lista.map(p =>
-    `<div class="prodTile"><b>${esc(p.nombre)}</b>
+    `<div class="prodTile"><div class="prodCab">${pictoProducto(picDe(p), 46)}<b>${esc(p.nombre)}</b></div>
       <div class="presRow">${p.pres.map((pr, i) => {
         const k = p.id + '|' + i, n = draft[k] || 0;
         return `<button class="presChip ${n ? 'sel' : ''}" data-add="${k}">` +
           (n ? `<span class="cant">${n}</span>` : '') +
+          pictoEnvase(envaseDe(pr.n), 30) +
           `<span>${esc(pr.n)}</span>` + (pr.precio > 0 ? `<small>${money(pr.precio)}</small>` : '') + `</button>`;
       }).join('')}</div></div>`
   ).join('') || '<div class="sinProd">Sin productos en esta categoría. Tócale «Editar productos».</div>';
@@ -1375,7 +1434,8 @@ function renderTicket() {
     const pr = p && p.pres[Number(idx)];
     if (!p || !pr) return '';
     if (pr.precio > 0) { total += pr.precio * draft[k]; conPrecio = true; }
-    return `<div class="linea"><span class="nom">${esc(p.nombre)}<small>${esc(pr.n)}${pr.precio > 0 ? ' · ' + money(pr.precio) : ''}</small></span>
+    return `<div class="linea">${pictoProducto(picDe(p), 34)}
+      <span class="nom">${esc(p.nombre)}<small>${esc(pr.n)}${pr.precio > 0 ? ' · ' + money(pr.precio) : ''}</small></span>
       <span class="step"><button data-menos="${k}" aria-label="menos">−</button><b>${draft[k]}</b><button data-mas="${k}" aria-label="más">+</button></span></div>`;
   }).join('') || '<div class="vacioTicket">Toca los productos 👈</div>';
   $('#totalRow').classList.toggle('oculto', !conPrecio);
@@ -1528,7 +1588,7 @@ function descargarExcel() {
 function renderModal() {
   $('#listaProd').innerHTML = db.productos.map(p =>
     `<div class="filaProd">
-      <div class="fpTop"><span class="nom">${CATS[p.cat] ? CATS[p.cat].ic : ''} ${esc(p.nombre)} <small>· ${CATS[p.cat] ? CATS[p.cat].t : esc(p.cat)}</small></span>
+      <div class="fpTop">${pictoProducto(picDe(p), 34)}<span class="nom">${esc(p.nombre)} <small>· ${CATS[p.cat] ? CATS[p.cat].t : esc(p.cat)}</small></span>
       <button class="btnX" data-quita="${p.id}" aria-label="Quitar">✕</button></div>
       <div class="presEdit">${p.pres.map((pr, i) =>
         `<label>${esc(pr.n)} <input type="number" min="0" step="1" value="${pr.precio}" data-precio="${p.id}|${i}" aria-label="Precio"></label>`).join('')}</div>
