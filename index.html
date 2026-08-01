@@ -32,19 +32,20 @@
   --hoja:#2B2620;    /* (nombre heredado) tinta   */
 
   --cafe:#2B2620; --cafe-2:#6E6355; --cafe-suave:#A2957F; --gris:#C7BCA6;
-  --yema:#EFE8D8;
+  --yema:#F7A82B;
 
-  --verde:#567A46; --verde-dim:#E9EFE2;
+  --verde:#3E8E3F; --verde-dim:#E7F1E5;
   --naranja:#8A6B4A; --azul:#5A6B7C; --azul-dim:#E9ECEF;
-  --rojo:#A4432F; --rojo-dim:#F4E4DC;
+  --rojo:#C0392B; --rojo-dim:#F9E5E1;
 
-  /* Estados: monocromo. El QUÉ lo dicen el dibujo y la posición;
-     solo Entregado se permite su verde y lo urgente su rojo. */
-  --e1:#2B2620; --e1-suave:#F1EADA; --e1-borde:#CFC4AD;
-  --e2:#2B2620; --e2-suave:#F1EADA; --e2-borde:#CFC4AD;
-  --e3:#2B2620; --e3-suave:#F1EADA; --e3-borde:#CFC4AD;
-  --e4:#567A46; --e4-suave:#E9EFE2; --e4-borde:#9BB287;
-  --urgente:#A4432F; --urgente-suave:#F4E4DC;
+  /* Acentos vivos con propósito, validados para daltonismo sobre el hueso.
+     El lienzo es neutro; el color solo habla cuando dice algo. */
+  --e1:#1D6FB8; --e1-suave:#E7F0F8; --e1-borde:#8FB6DA;
+  --e2:#E06400; --e2-suave:#FCEDDE; --e2-borde:#EFAC70;
+  --e3:#C22C8C; --e3-suave:#F8E5F1; --e3-borde:#DE8FC3;
+  --e4:#3E8E3F; --e4-suave:#E7F1E5; --e4-borde:#93C292;
+  --ambar:#F7A82B; --ambar-hondo:#B96E00;
+  --urgente:#C0392B; --urgente-suave:#F9E5E1;
 
   --slab:"Alfa Slab One","Baloo 2",serif;
   --font:"Baloo 2",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
@@ -436,66 +437,80 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
 .btnAjustes:active{transform:translate(3px,3px);box-shadow:none}
 /* ═══════════ TEMA HUESO · capa final ═══════════ */
 .heroCafe{background:var(--cafe)}
-.marca{color:var(--crema)}
-.pillFresco{background:transparent;border-color:var(--crema);color:var(--crema)}
+.marca{color:var(--ambar)}
+.pillFresco{background:var(--ambar);border-color:var(--cafe);color:var(--cafe)}
 .heroCafe .sub{color:var(--cafe-suave)}
 .franjaYema{background:var(--arena);border-top:none;border-bottom:2px solid var(--salvia)}
 .franjaYema h2{color:var(--cafe)}
 .toldo{background:
-  radial-gradient(circle at 27px -8px, var(--crema) 0 22px, transparent 23px),
+  radial-gradient(circle at 27px -8px, var(--ambar) 0 22px, transparent 23px),
   radial-gradient(circle at 27px -8px, var(--cafe) 0 25px, transparent 26px);
   background-size:54px 28px;background-repeat:repeat-x}
 .topBar{background:var(--cafe);box-shadow:none}
-.marcaMini{color:var(--crema)}
-.chipDia{background:transparent;border:2px solid var(--cafe-suave);color:var(--crema)}
+.marcaMini{color:var(--ambar)}
+.chipDia{background:transparent;border:2px solid var(--ambar-hondo);color:var(--ambar)}
 .tituloVista{background:var(--crema);color:var(--cafe)}
 .btnAtras{background:transparent;border-color:var(--cafe-suave);color:var(--crema)}
 
 /* Acción principal: tinta sobre hueso — el único “color fuerte” es el contraste */
 .btnPrincipal,.btnDia,.btnGuardar,.btnAgregar,.btnCnx,
-.barraCarrito .btnB.principal,.btnSigue{background:var(--cafe);border-color:var(--cafe);color:var(--crema)}
-.btnDia.verde{background:var(--cafe);border-color:var(--cafe);color:var(--crema)}
+.barraCarrito .btnB.principal,.btnSigue{background:var(--ambar);border-color:var(--cafe);color:var(--cafe)}
+.btnDia.verde{background:var(--e4);border-color:var(--e4);color:#fff}
 .btnCnx.blanco{background:var(--blanco);color:var(--cafe);border-color:var(--cafe)}
 .cardRuta .pill,.tituloPaso .pill{background:var(--arena);border-color:var(--cafe);color:var(--cafe)}
 .barraCarrito{background:var(--cafe)}
-.barraCarrito .cuenta{background:var(--crema);color:var(--cafe)}
+.barraCarrito .cuenta{background:var(--ambar);color:var(--cafe)}
 .barraCarrito .btnB{border-color:var(--cafe-suave);color:var(--crema)}
 .presChip{background:var(--durazno)}
-.presChip.sel{background:var(--cafe);color:var(--crema)}
-.presChip.sel small{color:var(--gris)}
-.presChip.sel .pic *{stroke:var(--crema)!important}
+.presChip.sel{background:var(--ambar);color:var(--cafe)}
+.presChip.sel small{color:var(--cafe-2)}
+
 .catBtn.activa{background:var(--arena)}
-.folio,.filaNum,.cant,.cantG,.ficha .cantG{background:var(--cafe);color:var(--crema)}
+.folio,.filaNum,.cant,.cantG,.ficha .cantG{background:var(--cafe);color:var(--ambar)}
 .filaP.tarde .filaNum{background:var(--urgente);color:#fff}
 .notaPed{background:var(--arena);color:var(--cafe-2)}
 .liga,.ligaSuave{color:var(--cafe-2)}
-.toast{background:var(--cafe);color:var(--crema);border-color:var(--cafe-suave)}
+.toast{background:var(--cafe);color:var(--crema);border-color:var(--ambar)}
 .miniKpi,.pasosMini,.btnX,.step button{background:var(--durazno)}
 .est4{box-shadow:var(--sombra-ch)}
 .est4[data-e]{background:var(--blanco)}
-.est4[data-e="entregado"]{background:var(--e4-suave)}
+.est4[data-e="solicitado"]{border-color:var(--e1);color:var(--e1)}
+.est4[data-e="proceso"]{border-color:var(--e2);color:var(--e2)}
+.est4[data-e="terminado"]{border-color:var(--e3);color:var(--e3)}
+.est4[data-e="entregado"]{border-color:var(--e4);color:var(--e4)}
+
 .kpi{border-width:2.5px}
-.filaP{border-width:3px}
-.filaP[data-e="solicitado"],.filaP[data-e="proceso"],.filaP[data-e="terminado"]{border-color:var(--salvia)}
-.filaP[data-e="entregado"]{border-color:var(--e4)}
+.filaP{border-width:2.5px;border-left-width:10px}
+.filaP[data-e="solicitado"]{border-color:var(--salvia);border-left-color:var(--e1)}
+.filaP[data-e="proceso"]{border-color:var(--salvia);border-left-color:var(--e2)}
+.filaP[data-e="terminado"]{border-color:var(--salvia);border-left-color:var(--e3)}
+.filaP[data-e="entregado"]{border-color:var(--e4);border-left-color:var(--e4)}
 .filaP.tarde{border-color:var(--urgente)}
 .ficha{border-width:2.5px;border-color:var(--salvia)}
 .prodTile,.pedidoCard,.catGrande,.diaCard,.cardRuta,.ticket,.cnxBloque,.filaProd{border-width:2.5px}
 .pasoP{border-color:var(--salvia);color:var(--cafe-suave)}
-.pasoP.hecho{background:var(--arena);border-color:var(--cafe);color:var(--cafe)}
-.pasoP.actual{background:var(--cafe);border-color:var(--cafe);color:var(--crema)}
+.pasoP.hecho[data-e="solicitado"]{background:var(--e1-suave);border-color:var(--e1);color:var(--e1)}
+.pasoP.hecho[data-e="proceso"]{background:var(--e2-suave);border-color:var(--e2);color:var(--e2)}
+.pasoP.hecho[data-e="terminado"]{background:var(--e3-suave);border-color:var(--e3);color:var(--e3)}
+.pasoP.actual[data-e="solicitado"]{background:var(--e1);border-color:var(--e1);color:#fff}
+.pasoP.actual[data-e="proceso"]{background:var(--e2);border-color:var(--e2);color:#fff}
+.pasoP.actual[data-e="terminado"]{background:var(--e3);border-color:var(--e3);color:#fff}
 .pasoP.actual .pic *{stroke:var(--crema)!important}
-.pasoP[data-e="entregado"].actual{background:var(--e4);border-color:var(--e4)}
+.pasoP.actual[data-e="entregado"]{background:var(--e4);border-color:var(--e4);color:#fff}
 .uneP{background:var(--salvia)}
 .uneP.hecho{background:var(--cafe)}
-.btnSig{background:var(--cafe)!important;border-color:var(--cafe)!important;color:var(--crema)!important}
-.btnSig .pic *{stroke:var(--crema)!important}
-.btnSig[data-n="entregado"]{background:var(--e4)!important;border-color:var(--e4)!important}
+.btnSig[data-n="proceso"]{background:var(--e2)!important;border-color:var(--e2)!important;color:#fff!important}
+.btnSig[data-n="terminado"]{background:var(--e3)!important;border-color:var(--e3)!important;color:#fff!important}
+.btnSig .pic *{stroke:#fff!important}
+.btnSig[data-n="entregado"]{background:var(--e4)!important;border-color:var(--e4)!important;color:#fff!important}
 .chipEst.activo{background:var(--cafe);border-color:var(--cafe);color:var(--crema)}
+.chipEst[data-est="solicitado"].activo{background:var(--e1);border-color:var(--e1);color:#fff}
+.chipEst[data-est="proceso"].activo{background:var(--e2);border-color:var(--e2);color:#fff}
+.chipEst[data-est="terminado"].activo{background:var(--e3);border-color:var(--e3);color:#fff}
 .chipEst[data-est="entregado"].activo{background:var(--e4);border-color:var(--e4)}
 .pasoDot .pc{box-shadow:var(--sombra-ch)}
-.pasoDot.actual .pc{background:var(--cafe);color:var(--crema)}
-.pasoDot.hecho .pc{background:var(--e4);border-color:var(--e4)}
+.pasoDot.actual .pc{background:var(--ambar);color:var(--cafe)}
+.pasoDot.hecho .pc{background:var(--e4);border-color:var(--e4);color:#fff}
 .lema{background:var(--cafe);color:var(--crema)}
 .estadoDia{background:var(--verde-dim);border-color:var(--verde);color:var(--verde)}
 .estadoDia.alerta{background:var(--rojo-dim);border-color:var(--rojo);color:var(--rojo)}
@@ -516,7 +531,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
     <div class="marca">
       <svg width="38" height="50" viewBox="0 0 44 56"><path d="M22 2C12 2 3 20 3 34a19 19 0 0 0 38 0C41 20 32 2 22 2Z" fill="#FFFDF8" stroke="#F5A623" stroke-width="4"/></svg>
       <span>CASA MUÑOZ</span>
-      <svg width="38" height="50" viewBox="0 0 44 56"><path d="M22 2C12 2 3 20 3 34a19 19 0 0 0 38 0C41 20 32 2 22 2Z" fill="#B98A5F" stroke="#F5A623" stroke-width="4"/></svg>
+      <svg width="38" height="50" viewBox="0 0 44 56"><path d="M22 2C12 2 3 20 3 34a19 19 0 0 0 38 0C41 20 32 2 22 2Z" fill="#C98A4B" stroke="#F5A623" stroke-width="4"/></svg>
     </div>
     <p class="sub">Central de Abasto · CDMX</p>
   </header>
@@ -717,20 +732,20 @@ const DIBUJO_PRODUCTO = {
   huevoBlanco: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#FFFDF8" stroke="${TRAZO}" stroke-width="4"/>
     <path d="M22 30c-3 5-4 10-4 14" stroke="#DED4BE" stroke-width="4" stroke-linecap="round" fill="none"/>`,
 
-  huevoRojo: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#B98A5F" stroke="${TRAZO}" stroke-width="4"/>
-    <path d="M22 30c-3 5-4 10-4 14" stroke="#9A7350" stroke-width="4" stroke-linecap="round" fill="none"/>`,
+  huevoRojo: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#C98A4B" stroke="${TRAZO}" stroke-width="4"/>
+    <path d="M22 30c-3 5-4 10-4 14" stroke="#A96E33" stroke-width="4" stroke-linecap="round" fill="none"/>`,
 
   huevoFragil: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#FFFDF8" stroke="${TRAZO}" stroke-width="4"/>
     <path d="M20 28l7 5-5 7 9 4-4 8" stroke="${TRAZO}" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`,
 
   claras: `<path d="M25 12h14v8l7 10v28a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V30l7-10z" fill="#FBF6EA" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <path d="M18 40h28v18a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4z" fill="#E3D6B2" stroke="${TRAZO}" stroke-width="3"/>`,
+    <path d="M18 40h28v18a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4z" fill="#F0D98C" stroke="${TRAZO}" stroke-width="3"/>`,
 
   harina: `<path d="M18 22c0-4 4-6 14-6s14 2 14 6l4 34a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6z" fill="#EFE8D8" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <path d="M26 34c3-4 9-4 12 0M26 44c3-4 9-4 12 0" stroke="#C6B792" stroke-width="3.5" fill="none" stroke-linecap="round"/>`,
+    <path d="M26 34c3-4 9-4 12 0M26 44c3-4 9-4 12 0" stroke="#C8A25F" stroke-width="3.5" fill="none" stroke-linecap="round"/>`,
 
   leche: `<path d="M22 10h20v8l6 8v34a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V26l6-8z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <rect x="16" y="34" width="32" height="14" fill="#9FB0BE" stroke="${TRAZO}" stroke-width="3"/>`,
+    <rect x="16" y="34" width="32" height="14" fill="#5FA8DC" stroke="${TRAZO}" stroke-width="3"/>`,
 
   azucar: `<path d="M16 26h32l3 32a5 5 0 0 1-5 5H18a5 5 0 0 1-5-5z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
     <path d="M16 26l4-12h24l4 12z" fill="#EFE8D8" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
@@ -738,8 +753,8 @@ const DIBUJO_PRODUCTO = {
     <rect x="34" y="48" width="7" height="7" fill="#DED4BE" stroke="${TRAZO}" stroke-width="2.5"/>`,
 
   frijol: `<path d="M10 40a22 12 0 0 0 44 0z" fill="#EFE8D8" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <ellipse cx="24" cy="32" rx="9" ry="6.5" fill="#8F6248" stroke="${TRAZO}" stroke-width="3" transform="rotate(-20 24 32)"/>
-    <ellipse cx="40" cy="34" rx="9" ry="6.5" fill="#6E4A36" stroke="${TRAZO}" stroke-width="3" transform="rotate(15 40 34)"/>`,
+    <ellipse cx="24" cy="32" rx="9" ry="6.5" fill="#9C5B3C" stroke="${TRAZO}" stroke-width="3" transform="rotate(-20 24 32)"/>
+    <ellipse cx="40" cy="34" rx="9" ry="6.5" fill="#7B4530" stroke="${TRAZO}" stroke-width="3" transform="rotate(15 40 34)"/>`,
 
   arroz: `<path d="M10 40a22 12 0 0 0 44 0z" fill="#EFE8D8" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
     <ellipse cx="22" cy="30" rx="4" ry="8" fill="#FFFDF8" stroke="${TRAZO}" stroke-width="2.5" transform="rotate(-25 22 30)"/>
@@ -749,17 +764,17 @@ const DIBUJO_PRODUCTO = {
 
 /* ---------- ENVASES / PRESENTACIONES ---------- */
 const DIBUJO_ENVASE = {
-  cono: `<path d="M6 40h52v14a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#C6B792" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+  cono: `<path d="M6 40h52v14a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#C8A25F" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
     <ellipse cx="18" cy="36" rx="8" ry="10" fill="#FFFDF8" stroke="${TRAZO}" stroke-width="3.5"/>
     <ellipse cx="32" cy="34" rx="8" ry="10" fill="#FFFDF8" stroke="${TRAZO}" stroke-width="3.5"/>
     <ellipse cx="46" cy="36" rx="8" ry="10" fill="#FFFDF8" stroke="${TRAZO}" stroke-width="3.5"/>`,
 
-  caja: `<path d="M8 22h48v34a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#D5C6A4" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <path d="M8 22l7-10h34l7 10" fill="#E6DAC0" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+  caja: `<path d="M8 22h48v34a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#DDB273" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M8 22l7-10h34l7 10" fill="#EDCD96" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
     <path d="M32 22v38" stroke="${TRAZO}" stroke-width="3.5"/>`,
 
-  mediaCaja: `<path d="M8 38h48v18a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#D5C6A4" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <path d="M8 38l7-8h34l7 8" fill="#E6DAC0" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+  mediaCaja: `<path d="M8 38h48v18a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#DDB273" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M8 38l7-8h34l7 8" fill="#EDCD96" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
     <path d="M32 38v22" stroke="${TRAZO}" stroke-width="3.5"/>
     <path d="M14 20h36" stroke="${TRAZO}" stroke-width="4" stroke-dasharray="6 5" stroke-linecap="round"/>`,
 
@@ -772,14 +787,14 @@ const DIBUJO_ENVASE = {
   pieza: `<path d="M24 12h16v6l5 7v33a4 4 0 0 1-4 4H23a4 4 0 0 1-4-4V25l5-7z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>`,
 
   litroCh: `<path d="M27 10h10v7l6 8v29a5 5 0 0 1-5 5H26a5 5 0 0 1-5-5V25l6-8z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <rect x="21" y="42" width="22" height="12" fill="#C3CED8" stroke="${TRAZO}" stroke-width="3"/>`,
+    <rect x="21" y="42" width="22" height="12" fill="#A9CDEC" stroke="${TRAZO}" stroke-width="3"/>`,
 
   litro: `<path d="M26 8h12v8l7 9v34a5 5 0 0 1-5 5H24a5 5 0 0 1-5-5V25l7-9z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
-    <rect x="19" y="32" width="26" height="24" fill="#9FB0BE" stroke="${TRAZO}" stroke-width="3"/>`,
+    <rect x="19" y="32" width="26" height="24" fill="#5FA8DC" stroke="${TRAZO}" stroke-width="3"/>`,
 
   galon: `<path d="M24 8h14v7h6a6 6 0 0 1 6 6v37a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6V21a6 6 0 0 1 6-6h4z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
     <path d="M50 26h5a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-5" fill="none" stroke="${TRAZO}" stroke-width="4"/>
-    <rect x="14" y="30" width="36" height="28" fill="#9FB0BE" stroke="${TRAZO}" stroke-width="3"/>`,
+    <rect x="14" y="30" width="36" height="28" fill="#5FA8DC" stroke="${TRAZO}" stroke-width="3"/>`,
 };
 
 /* ---------- ESTADOS (con forma distinta, no solo color) ---------- */
