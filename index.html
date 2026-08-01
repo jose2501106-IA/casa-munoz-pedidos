@@ -26,6 +26,14 @@
   --verde:#2F8B57; --verde-dim:#E3F1E8;
   --naranja:#E07B2F; --azul:#3F7CB8; --azul-dim:#E4EEF7;
   --rojo:#C94F44; --rojo-dim:#FBE9E7; --gris:#B9AF9F;
+  /* Estados — paleta verificada con validador de daltonismo (protán, deután, tritán)
+     sobre el fondo crema. Orden de columnas escogido para que verde y naranja
+     nunca queden pegados, que es el par que se confunde. */
+  --e1:#2166A8; --e1-suave:#E4EDF6; --e1-borde:#7FA9CE;   /* Solicitado  */
+  --e2:#CC5500; --e2-suave:#FBE9DC; --e2-borde:#E2A578;   /* En proceso  */
+  --e3:#B02A87; --e3-suave:#F8E3F1; --e3-borde:#D98CC0;   /* Terminado   */
+  --e4:#357A38; --e4-suave:#E4F0E4; --e4-borde:#8CBA8E;   /* Entregado   */
+  --urgente:#B3261E; --urgente-suave:#FBE6E4;
   --slab:"Alfa Slab One","Baloo 2",serif;
   --font:"Baloo 2",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   --sombra:4px 4px 0 var(--cafe);
@@ -261,6 +269,96 @@ main.vista.ancha{max-width:1600px;padding-bottom:40px}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 .nubeChip{position:fixed;right:12px;bottom:12px;background:var(--cafe);color:var(--crema);border-radius:999px;padding:6px 14px;font-weight:800;font-size:12px;z-index:60;opacity:.9}
 
+/* ================= TABLERO VISUAL (para quien no lee) =================
+   Cada pedido ocupa un renglón completo: así cabe entero, con sus fichas
+   grandes. El estado se lee en la pista de 4 pasos, no hace falta leer. */
+.pic{display:block;flex:none}
+.resumen4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 0 4px}
+.est4{display:flex;align-items:center;justify-content:center;gap:10px;border:4px solid;border-radius:18px;padding:12px 8px;box-shadow:var(--sombra-ch);font-weight:800}
+.est4 .n4{font-family:var(--slab);font-size:clamp(26px,3vw,42px);line-height:1}
+.est4 .t4{font-size:clamp(12px,1.1vw,17px);text-align:left;line-height:1.15;text-transform:uppercase;letter-spacing:.03em}
+.est4[data-e="solicitado"]{background:var(--e1-suave);border-color:var(--e1);color:var(--e1)}
+.est4[data-e="proceso"]   {background:var(--e2-suave);border-color:var(--e2);color:var(--e2)}
+.est4[data-e="terminado"] {background:var(--e3-suave);border-color:var(--e3);color:var(--e3)}
+.est4[data-e="entregado"] {background:var(--e4-suave);border-color:var(--e4);color:var(--e4)}
+
+.listaT{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+.filaP{display:flex;gap:12px;align-items:stretch;background:linear-gradient(180deg,#FFF,#FFFDF4);border:4px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:12px}
+.filaP[data-e="solicitado"]{border-color:var(--e1)}
+.filaP[data-e="proceso"]   {border-color:var(--e2)}
+.filaP[data-e="terminado"] {border-color:var(--e3)}
+.filaP[data-e="entregado"] {border-color:var(--e4)}
+.filaP.tarde{border-color:var(--urgente);background:var(--urgente-suave)}
+.filaP.saliendo{animation:salir 3s forwards}
+.filaNum{flex:none;width:60px;display:grid;place-items:center;background:var(--cafe);color:var(--yema);border-radius:14px;font-family:var(--slab);font-size:26px}
+.filaP.tarde .filaNum{background:var(--urgente);color:#fff}
+.medio{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cabP{display:flex;align-items:center;gap:12px}
+.cabP b{font-size:clamp(17px,1.5vw,26px);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lado{flex:none;width:clamp(150px,15vw,240px);display:flex;flex-direction:column;gap:9px;justify-content:center}
+
+/* Pista de 4 pasos: pasados llenos, actual grande, futuros apagados */
+.pista{display:flex;align-items:center;gap:4px;justify-content:center}
+.pasoP{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:3px solid var(--cafe-suave);background:var(--blanco);color:var(--cafe-suave);flex:none}
+.pasoP.hecho{border-color:currentColor}
+.pasoP.actual{width:48px;height:48px;border-width:4px;box-shadow:0 0 0 4px rgba(0,0,0,.06)}
+.pasoP[data-e="solicitado"].hecho,.pasoP[data-e="solicitado"].actual{color:var(--e1);background:var(--e1-suave)}
+.pasoP[data-e="proceso"].hecho,.pasoP[data-e="proceso"].actual      {color:var(--e2);background:var(--e2-suave)}
+.pasoP[data-e="terminado"].hecho,.pasoP[data-e="terminado"].actual  {color:var(--e3);background:var(--e3-suave)}
+.pasoP[data-e="entregado"].hecho,.pasoP[data-e="entregado"].actual  {color:var(--e4);background:var(--e4-suave)}
+.uneP{flex:1;height:4px;background:var(--cafe-suave);border-radius:2px;min-width:6px}
+.uneP.hecho{background:var(--cafe)}
+.colHead[data-e="solicitado"]{background:var(--e1);color:#fff}
+.colHead[data-e="proceso"]  {background:var(--e2);color:#fff}
+.colHead[data-e="terminado"]{background:var(--e3);color:#fff}
+.colHead[data-e="entregado"]{background:var(--e4);color:#fff}
+.colHead .num{background:#fff}
+.colHead[data-e="solicitado"] .num{color:var(--e1)}
+.colHead[data-e="proceso"]   .num{color:var(--e2)}
+.colHead[data-e="terminado"] .num{color:var(--e3)}
+.colHead[data-e="entregado"] .num{color:var(--e4)}
+.col[data-col="solicitado"]{background:var(--e1-suave);border-color:var(--e1-borde)}
+.col[data-col="proceso"]   {background:var(--e2-suave);border-color:var(--e2-borde)}
+.col[data-col="terminado"] {background:var(--e3-suave);border-color:var(--e3-borde)}
+.col[data-col="entregado"] {background:var(--e4-suave);border-color:var(--e4-borde)}
+.tarK[data-e="solicitado"]{border-color:var(--e1)}
+.tarK[data-e="proceso"]   {border-color:var(--e2)}
+.tarK[data-e="terminado"] {border-color:var(--e3)}
+.tarK[data-e="entregado"] {border-color:var(--e4)}
+
+/* Fichas de producto: dibujo grande + cantidad enorme + envase */
+.fichas{display:flex;flex-wrap:wrap;gap:10px}
+.ficha{position:relative;flex:0 0 auto;width:clamp(104px,9vw,150px);background:var(--blanco);border:3px solid var(--cafe);border-radius:16px;padding:10px 6px 7px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.ficha .cantG{position:absolute;top:-13px;left:-11px;min-width:40px;height:40px;padding:0 9px;border-radius:999px;background:var(--cafe);color:var(--yema);font-family:var(--slab);font-size:23px;display:grid;place-items:center;border:4px solid var(--blanco)}
+.ficha .txt{font-weight:800;font-size:12.5px;color:var(--cafe-2);text-align:center;line-height:1.15;max-width:100%;overflow-wrap:anywhere}
+
+/* Reloj visual: el anillo se llena solo, el número es universal */
+.reloj{position:relative;flex:none;display:grid;place-items:center}
+.reloj svg{display:block;transform:rotate(-90deg)}
+.reloj .min{position:absolute;font-family:var(--slab);font-size:15px;line-height:1;color:var(--cafe)}
+.reloj.tarde .min{color:var(--urgente)}
+.tarK.tarde{border-color:var(--urgente)!important;background:var(--urgente-suave)}
+
+/* Botón de avanzar: icono del estado que sigue, flecha y color */
+.btnSig{display:flex!important;align-items:center;justify-content:center;gap:9px}
+.btnSig[data-n="proceso"]  {background:var(--e2-suave);border-color:var(--e2);color:var(--e2)}
+.btnSig[data-n="terminado"]{background:var(--e3-suave);border-color:var(--e3);color:var(--e3)}
+.btnSig[data-n="entregado"]{background:var(--e4-suave);border-color:var(--e4);color:var(--e4)}
+.btnSig .fl{font-size:20px;font-weight:800;line-height:1}
+.filaNum{background:var(--cafe);color:var(--yema)}
+.filaNum.top{background:var(--urgente);color:#fff}
+
+/* Televisión: todo más grande, legible a 5 metros */
+@media(min-width:1500px){
+  .ficha .cantG{min-width:52px;height:52px;font-size:30px;top:-16px;left:-13px}
+  .ficha .txt{font-size:16px}
+  .reloj .min{font-size:26px}
+  .btnSig .fl{font-size:30px}
+  .filaNum{width:84px;font-size:38px}
+  .pasoP{width:46px;height:46px}
+  .pasoP.actual{width:62px;height:62px}
+}
+
 /* ================= CONEXIONES ================= */
 .cnxCaja{max-width:660px;margin:0 auto;width:100%}
 .cnxBloque{background:linear-gradient(180deg,#FFF,#FFFDF4);border:3px solid var(--cafe);border-radius:20px;box-shadow:var(--sombra);padding:18px 16px;margin-bottom:18px}
@@ -453,8 +551,9 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
   </main>
 
   <main id="vDashboard" class="vista ancha oculto">
-    <div class="kpiRow" id="kpiRow"></div>
-    <div class="tablero" id="tablero"></div>
+    <div class="resumen4" id="kpiRow"></div>
+    <div class="listaT" id="tablero"></div>
+    <p id="pieResumen" class="seccionGris" style="margin-top:16px"></p>
     <div class="pieDash">
       <button class="btnPie hoverable" id="btnExcel">⬇️ Excel del día</button>
       <button class="btnPie hoverable" id="btnCerrarDia2">🌙 Cerrar día</button>
@@ -483,6 +582,130 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
 
 <script>
 'use strict';
+
+/* ══════ PICTOGRAMAS (dibujos provisionales) ══════ */
+const TRAZO = '#3B2314';
+
+/* ---------- PRODUCTOS ---------- */
+const DIBUJO_PRODUCTO = {
+  huevoBlanco: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="4"/>
+    <path d="M22 30c-3 5-4 10-4 14" stroke="#E4DAC4" stroke-width="4" stroke-linecap="round" fill="none"/>`,
+
+  huevoRojo: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#C98A4B" stroke="${TRAZO}" stroke-width="4"/>
+    <path d="M22 30c-3 5-4 10-4 14" stroke="#A96E33" stroke-width="4" stroke-linecap="round" fill="none"/>`,
+
+  huevoFragil: `<ellipse cx="32" cy="36" rx="19" ry="25" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="4"/>
+    <path d="M20 28l7 5-5 7 9 4-4 8" stroke="${TRAZO}" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`,
+
+  claras: `<path d="M25 12h14v8l7 10v28a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V30l7-10z" fill="#FFF8E6" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M18 40h28v18a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4z" fill="#F5D98C" stroke="${TRAZO}" stroke-width="3"/>`,
+
+  harina: `<path d="M18 22c0-4 4-6 14-6s14 2 14 6l4 34a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6z" fill="#F3E6C8" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M26 34c3-4 9-4 12 0M26 44c3-4 9-4 12 0" stroke="#C9A96A" stroke-width="3.5" fill="none" stroke-linecap="round"/>`,
+
+  leche: `<path d="M22 10h20v8l6 8v34a4 4 0 0 1-4 4H20a4 4 0 0 1-4-4V26l6-8z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="16" y="34" width="32" height="14" fill="#59A9FF" stroke="${TRAZO}" stroke-width="3"/>`,
+
+  azucar: `<path d="M16 26h32l3 32a5 5 0 0 1-5 5H18a5 5 0 0 1-5-5z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M16 26l4-12h24l4 12z" fill="#EDE6D6" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="24" y="40" width="7" height="7" fill="#D7CDB8" stroke="${TRAZO}" stroke-width="2.5"/>
+    <rect x="34" y="48" width="7" height="7" fill="#D7CDB8" stroke="${TRAZO}" stroke-width="2.5"/>`,
+
+  frijol: `<path d="M10 40a22 12 0 0 0 44 0z" fill="#EDE6D6" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="24" cy="32" rx="9" ry="6.5" fill="#9C5B3C" stroke="${TRAZO}" stroke-width="3" transform="rotate(-20 24 32)"/>
+    <ellipse cx="40" cy="34" rx="9" ry="6.5" fill="#7B4530" stroke="${TRAZO}" stroke-width="3" transform="rotate(15 40 34)"/>`,
+
+  arroz: `<path d="M10 40a22 12 0 0 0 44 0z" fill="#EDE6D6" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="22" cy="30" rx="4" ry="8" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="2.5" transform="rotate(-25 22 30)"/>
+    <ellipse cx="32" cy="27" rx="4" ry="8" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="2.5"/>
+    <ellipse cx="42" cy="30" rx="4" ry="8" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="2.5" transform="rotate(25 42 30)"/>`,
+};
+
+/* ---------- ENVASES / PRESENTACIONES ---------- */
+const DIBUJO_ENVASE = {
+  cono: `<path d="M6 40h52v14a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#C9A96A" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="18" cy="36" rx="8" ry="10" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="3.5"/>
+    <ellipse cx="32" cy="34" rx="8" ry="10" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="3.5"/>
+    <ellipse cx="46" cy="36" rx="8" ry="10" fill="#FFFDF7" stroke="${TRAZO}" stroke-width="3.5"/>`,
+
+  caja: `<path d="M8 22h48v34a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#D6A868" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M8 22l7-10h34l7 10" fill="#E8C08A" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M32 22v38" stroke="${TRAZO}" stroke-width="3.5"/>`,
+
+  mediaCaja: `<path d="M8 38h48v18a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" fill="#D6A868" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M8 38l7-8h34l7 8" fill="#E8C08A" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M32 38v22" stroke="${TRAZO}" stroke-width="3.5"/>
+    <path d="M14 20h36" stroke="${TRAZO}" stroke-width="4" stroke-dasharray="6 5" stroke-linecap="round"/>`,
+
+  bolsa: `<path d="M20 24h24l3 30a5 5 0 0 1-5 5H22a5 5 0 0 1-5-5z" fill="#F3E6C8" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M20 24l3-9h18l3 9z" fill="#E0D0AC" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>`,
+
+  bulto: `<path d="M12 22c0-5 5-8 20-8s20 3 20 8l4 34a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6z" fill="#E0D0AC" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M18 16c5 4 23 4 28 0" stroke="${TRAZO}" stroke-width="3.5" fill="none"/>`,
+
+  pieza: `<path d="M24 12h16v6l5 7v33a4 4 0 0 1-4 4H23a4 4 0 0 1-4-4V25l5-7z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>`,
+
+  litroCh: `<path d="M27 10h10v7l6 8v29a5 5 0 0 1-5 5H26a5 5 0 0 1-5-5V25l6-8z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="21" y="42" width="22" height="12" fill="#9BC9F5" stroke="${TRAZO}" stroke-width="3"/>`,
+
+  litro: `<path d="M26 8h12v8l7 9v34a5 5 0 0 1-5 5H24a5 5 0 0 1-5-5V25l7-9z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="19" y="32" width="26" height="24" fill="#59A9FF" stroke="${TRAZO}" stroke-width="3"/>`,
+
+  galon: `<path d="M24 8h14v7h6a6 6 0 0 1 6 6v37a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6V21a6 6 0 0 1 6-6h4z" fill="#FFFFFF" stroke="${TRAZO}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M50 26h5a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4h-5" fill="none" stroke="${TRAZO}" stroke-width="4"/>
+    <rect x="14" y="30" width="36" height="28" fill="#59A9FF" stroke="${TRAZO}" stroke-width="3"/>`,
+};
+
+/* ---------- ESTADOS (con forma distinta, no solo color) ---------- */
+const DIBUJO_ESTADO = {
+  /* Solicitado: una mano recibiendo / bandeja de entrada */
+  solicitado: `<path d="M12 34h40v18a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M32 8v22M32 30l-9-9M32 30l9-9" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  /* En proceso: engrane girando */
+  proceso: `<circle cx="32" cy="32" r="11" fill="none" stroke="currentColor" stroke-width="5"/>
+    <path d="M32 6v8M32 50v8M6 32h8M50 32h8M14 14l6 6M44 44l6 6M50 14l-6 6M20 44l-6 6" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>`,
+  /* Terminado: caja cerrada con palomita */
+  terminado: `<path d="M10 24h44v30a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M10 24l6-12h32l6 12" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M22 40l7 8 14-15" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`,
+  /* Entregado: camioneta saliendo */
+  entregado: `<path d="M4 20h30v26H4z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M34 28h12l10 10v8H34z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="16" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="5"/>
+    <circle cx="44" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="5"/>`,
+};
+
+/* ---------- Envoltura ---------- */
+function svgPicto(cuerpo, alto) {
+  return `<svg class="pic" viewBox="0 0 64 72" width="${alto}" height="${alto}" aria-hidden="true">${cuerpo}</svg>`;
+}
+function pictoProducto(id, alto) {
+  return svgPicto(DIBUJO_PRODUCTO[id] || DIBUJO_PRODUCTO.huevoBlanco, alto);
+}
+function pictoEnvase(id, alto) {
+  return svgPicto(DIBUJO_ENVASE[id] || DIBUJO_ENVASE.caja, alto);
+}
+function pictoEstado(id, alto) {
+  return `<svg class="pic" viewBox="0 0 64 64" width="${alto}" height="${alto}" aria-hidden="true">${DIBUJO_ESTADO[id] || ''}</svg>`;
+}
+
+/* Adivina el envase a partir del nombre de la presentación */
+function envaseDe(nombre) {
+  const t = String(nombre || '').toLowerCase();
+  if (t.includes('cono')) return 'cono';
+  if (t.includes('media')) return 'mediaCaja';
+  if (t.includes('caja')) return 'caja';
+  if (t.includes('gal')) return 'galon';
+  if (t.includes('½') || t.includes('1/2')) return 'litroCh';
+  if (t.includes('litro')) return 'litro';
+  if (t.includes('pieza') || t.includes('pza')) return 'pieza';
+  if (t.includes('bulto')) return 'bulto';
+  const kg = t.match(/(\d+)\s*kg/);
+  if (kg) return Number(kg[1]) >= 20 ? 'bulto' : 'bolsa';
+  if (t.includes('kilo') || t.includes('kg')) return 'bolsa';
+  return 'caja';
+}
+
 /* ══════════════════════════════════════════════════════════
    Casa Muñoz · Gestor de Pedidos
    Rutas: #inicio (iniciar día) · #menu · #pedidos · #nuevo · #dashboard
@@ -549,11 +772,17 @@ const CATS = {
 const META_MIN = 10;
 
 /* ───── Catálogo de Casa Muñoz ───── */
-const P = (cat, nombre, pres) => ({ id: uid(), cat, nombre, pres: pres.map(n => ({ n, precio: 0 })) });
+/* Dibujo por defecto de cada categoría (se puede cambiar producto por producto) */
+const PIC_CAT = { huevo: 'huevoBlanco', claras: 'claras', harina: 'harina',
+                  leche: 'leche', azucar: 'azucar', frijol: 'frijol', arroz: 'arroz' };
+const picDe = o => (o && o.pic) || PIC_CAT[o && o.cat] || 'huevoBlanco';
+
+const P = (cat, nombre, pres, pic) => ({ id: uid(), cat, nombre, pic: pic || PIC_CAT[cat],
+                                         pres: pres.map(n => ({ n, precio: 0 })) });
 const HP = ['Cono', 'Kilo', 'Media caja', 'Caja'];
 const SEED = [
   P('huevo', 'San Juan', HP), P('huevo', 'Chaparral Blanco', HP),
-  P('huevo', 'Chaparral Rojo', HP), P('huevo', 'Frágil', HP),
+  P('huevo', 'Chaparral Rojo', HP, 'huevoRojo'), P('huevo', 'Frágil', HP, 'huevoFragil'),
   P('claras', 'Claras de huevo', ['½ litro', '1 litro', 'Galón']),
   P('harina', 'Espiga Dorada', ['Kilo', 'Bulto']), P('harina', 'Hoja de Plata', ['Kilo', 'Bulto']),
   P('leche', 'San Juan Entera', ['Pieza', 'Caja']), P('leche', 'San Juan Deslactosada', ['Pieza', 'Caja']),
@@ -1117,7 +1346,7 @@ function guardarPedido() {
     const [pid, idx] = k.split('|');
     const p = db.productos.find(x => x.id === pid);
     const pr = p.pres[Number(idx)];
-    return { nombre: p.nombre, cat: p.cat, pres: pr.n, precio: pr.precio, cant: draft[k] };
+    return { nombre: p.nombre, cat: p.cat, pic: picDe(p), pres: pr.n, precio: pr.precio, cant: draft[k] };
   });
   const ahora = Date.now();
   const folio = pedidosDelCorte(corte).length + 1;
@@ -1133,18 +1362,62 @@ function guardarPedido() {
 }
 
 /* ───── 3 · Dashboard: tablero de filas ───── */
-function tarjetaK(p, saliendo) {
+/* Reloj visual: un anillo que se llena solo. Sin leer una palabra se ve
+   cuánto lleva el pedido; el número de minutos refuerza. */
+function relojAnillo(min, listo) {
+  const grande = window.innerWidth >= 1500;
+  const R = grande ? 34 : 25, gr = grande ? 8 : 6, C = 2 * Math.PI * R;
+  const frac = Math.max(0.06, Math.min(1, min / META_MIN));  // siempre se ve algo de arco
+  const tarde = !listo && min >= META_MIN;
+  const color = listo ? 'var(--e4)' : (tarde ? 'var(--urgente)' : (frac > 0.6 ? 'var(--e2)' : 'var(--e4)'));
+  const lado = (R + gr) * 2;
+  return `<div class="reloj ${tarde ? 'tarde' : ''}">
+    <svg width="${lado}" height="${lado}" viewBox="0 0 ${lado} ${lado}">
+      <circle cx="${lado/2}" cy="${lado/2}" r="${R}" fill="none" stroke="var(--durazno)" stroke-width="${gr}"/>
+      <circle cx="${lado/2}" cy="${lado/2}" r="${R}" fill="none" stroke="${color}" stroke-width="${gr}"
+        stroke-linecap="round" stroke-dasharray="${(C*frac).toFixed(1)} ${C.toFixed(1)}"/>
+    </svg><span class="min">${min}</span></div>`;
+}
+
+/* Una ficha por renglón del pedido: cantidad enorme, dibujo del producto y del envase. */
+function fichaItem(i) {
+  return `<div class="ficha">
+    <span class="cantG">${i.cant}</span>
+    ${pictoProducto(picDe(i), 54)}
+    ${pictoEnvase(envaseDe(i.pres), 28)}
+    <span class="txt">${esc(i.pres)}</span>
+  </div>`;
+}
+
+/* La pista de 4 pasos dice en qué va el pedido sin una sola palabra. */
+function pista(estado) {
+  const i = ESTADOS.indexOf(estado);
+  return '<div class="pista">' + ESTADOS.map((e, k) =>
+    (k ? `<span class="uneP ${k <= i ? 'hecho' : ''}"></span>` : '') +
+    `<span class="pasoP ${k < i ? 'hecho' : ''} ${k === i ? 'actual' : ''}" data-e="${e}">
+       ${pictoEstado(e, k === i ? 30 : 20)}</span>`).join('') + '</div>';
+}
+
+function renglonTablero(p, n, saliendo) {
   const sig = ESTADOS[ESTADOS.indexOf(p.estado) + 1];
-  const tarde = p.estado !== 'entregado' && minutos(p.creado) >= META_MIN;
-  const reloj = p.estado === 'entregado'
-    ? `✅ ${durTxt(p.minutosTotal || 0)}`
-    : `⏱ ${crono(p.creado)}${tarde ? ' · ¡ya se pasó!' : ''}`;
-  return `<div class="tarK ${saliendo ? 'saliendo entregada' : ''} ${tarde ? 'tarde' : ''}">
-    <div class="tkTop"><div class="folio">${p.folio}</div><b>${esc(p.cliente)}</b></div>
-    <div class="pedItems">${itemsTxt(p)}</div>
-    ${p.nota ? `<span class="notaPed">📝 ${esc(p.nota)}</span>` : ''}
-    <span class="cronoK">${reloj}</span>
-    ${sig && !saliendo ? `<button class="btnSig" data-sig="${p.id}">${ICONO[sig]} ${ETIQ[sig]} →</button>` : ''}
+  const listo = p.estado === 'entregado';
+  const min = listo ? (p.minutosTotal || 0) : minutos(p.creado);
+  const tarde = !listo && min >= META_MIN;
+  return `<div class="filaP ${saliendo ? 'saliendo' : ''} ${tarde ? 'tarde' : ''}" data-e="${p.estado}">
+    <div class="filaNum">${n}</div>
+    <div class="medio">
+      <div class="cabP">
+        ${relojAnillo(min, listo)}
+        <b>${esc(p.cliente)}</b>
+        ${p.nota ? `<span class="notaPed">📝 ${esc(p.nota)}</span>` : ''}
+      </div>
+      <div class="fichas">${p.items.map(fichaItem).join('')}</div>
+    </div>
+    <div class="lado">
+      ${pista(p.estado)}
+      ${sig && !saliendo ? `<button class="btnSig" data-sig="${p.id}" data-n="${sig}">
+          ${pictoEstado(sig, 28)}<span class="fl">→</span></button>` : ''}
+    </div>
   </div>`;
 }
 
@@ -1157,32 +1430,23 @@ function renderDashboard() {
   const tarde = enFila.filter(p => minutos(p.creado) >= META_MIN).length;
   const prom = entregados.length ? Math.round(entregados.reduce((s, p) => s + (p.minutosTotal || 0), 0) / entregados.length) : 0;
 
-  $('#kpiRow').innerHTML = [
-    { n: peds.length, t: 'Pedidos del día', cls: '' },
-    { n: enFila.length, t: 'En fila', cls: tarde ? 'rojo' : '' },
-    { n: prom ? prom + "'" : '—', t: 'Tiempo promedio', cls: '' },
-    { n: entregados.length, t: 'Entregados', cls: 'verde' },
-  ].map(k => `<div class="kpi ${k.cls}"><div class="n">${k.n}</div><small>${k.t}</small></div>`).join('');
+  /* Arriba: los 4 estados con su dibujo y su número — es todo lo que hay que leer. */
+  $('#kpiRow').innerHTML = ESTADOS.map(est => {
+    const n = est === 'entregado' ? entregados.length : peds.filter(p => p.estado === est).length;
+    return `<div class="est4 kpi" data-e="${est}">${pictoEstado(est, 34)}
+      <span class="n4 n">${n}</span><span class="t4">${ETIQ_COL[est]}</span></div>`;
+  }).join('');
+  $('#pieResumen').textContent =
+    `${peds.length} pedidos hoy · ${enFila.length} en fila${tarde ? ` · ${tarde} pasados de tiempo` : ''}${prom ? ` · promedio ${prom} min` : ''}`;
 
-  /* Filas: el más viejo hasta arriba. Un entregado se queda 3 s y su fila desaparece. */
+  /* Un renglón por pedido, el más viejo hasta arriba.
+     Al entregarse se queda 3 segundos y su renglón desaparece; los demás suben. */
   const filas = peds.filter(p => p.estado !== 'entregado' || (p.entregadoTs && ahora - p.entregadoTs < 3000));
   const hayTransito = filas.some(p => p.estado === 'entregado');
 
-  let html = '<div class="headNum"></div>' + ESTADOS.map(est =>
-    `<div class="colHead ${est === 'entregado' ? 'entregados' : ''}">${ICONO[est]} ${ETIQ_COL[est]}
-      <span class="num">${est === 'entregado' ? entregados.length : peds.filter(p => p.estado === est).length}</span></div>`).join('');
-
-  if (!filas.length) {
-    html += `<div class="tableroVacio">🧺 Sin pedidos en la fila${peds.length ? ' · ¡todo entregado!' : ''}</div>`;
-  } else {
-    filas.forEach((p, i) => {
-      html += `<div class="filaNum ${i === 0 ? 'top' : ''}">${i + 1}</div>`;
-      html += ESTADOS.map(est => est === p.estado
-        ? `<div class="celda llena">${tarjetaK(p, est === 'entregado')}</div>`
-        : '<div class="celda"></div>').join('');
-    });
-  }
-  $('#tablero').innerHTML = html;
+  $('#tablero').innerHTML = filas.length
+    ? filas.map((p, i) => renglonTablero(p, i + 1, p.estado === 'entregado')).join('')
+    : `<div class="tableroVacio">🧺 Sin pedidos en la fila${peds.length ? ' · ¡todo entregado!' : ''}</div>`;
 
   clearTimeout(timerSalida);
   if (hayTransito) timerSalida = setTimeout(renderRuta, 3200);
