@@ -517,6 +517,9 @@ const REGLAS = `{
 }`;
 function guardarCfg(c) { try { localStorage.setItem(KC, JSON.stringify(c)); } catch (e) {} }
 let CFG = leerCfg();
+/* Aparato que conectó la nube antes de que existieran las claves:
+   se le crea la suya para que no se quede sin sincronizar en silencio. */
+if (CFG.firebase && CFG.firebase.apiKey && !CFG.clave) { CFG.clave = claveNueva(); guardarCfg(CFG); }
 const FIREBASE_CONFIG = CFG.firebase;   // sincroniza tabletas y TV en vivo
 const SHEETS_URL      = CFG.sheets;     // Google Apps Script → Excel en su Drive
 
