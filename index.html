@@ -759,14 +759,26 @@ function parseFirebase(txt) {
   if (t.startsWith('CM1:')) {                       // código corto de otra tableta
     try { return JSON.parse(decodeURIComponent(escape(atob(t.slice(4))))); } catch (e) { return null; }
   }
-  const i = t.indexOf('{'), j = t.lastIndexOf('}');
-  if (i < 0 || j <= i) return null;
-  let s = t.slice(i, j + 1)
-    .replace(/^[ \t]*\/\/.*$/gm, '')                // comentarios (sin tocar los https://)
-    .replace(/([,{]\s*)([A-Za-z_$][\w$]*)\s*:/g, '$1"$2":')  // comillas a las llaves
-    .replace(/'/g, '"')
-    .replace(/,(\s*[}\]])/g, '$1');                 // comas sobrantes
-  try { const o = JSON.parse(s); return (o && o.apiKey) ? o : null; } catch (e) { return null; }
+  // Quita los comentarios de línea (sin tocar los https:// de los valores)
+  const limpio = t.replace(/^[ \t]*\/\/.*$/gm, '');
+  // Prueba cada bloque { … } balanceado y se queda con el que trae apiKey.
+  // Así no se confunde con el "import { initializeApp }" que Firebase pone arriba.
+  for (let i = 0; i < limpio.length; i++) {
+    if (limpio[i] !== '{') continue;
+    let prof = 0, fin = -1;
+    for (let k = i; k < limpio.length; k++) {
+      if (limpio[k] === '{') prof++;
+      else if (limpio[k] === '}') { prof--; if (prof === 0) { fin = k; break; } }
+    }
+    if (fin < 0) break;
+    const s = limpio.slice(i, fin + 1)
+      .replace(/([,{]\s*)([A-Za-z_$][\w$]*)\s*:/g, '$1"$2":')  // comillas a las llaves
+      .replace(/'/g, '"')
+      .replace(/,(\s*[}\]])/g, '$1');                          // comas sobrantes
+    try { const o = JSON.parse(s); if (o && o.apiKey) return o; } catch (e) { /* sigue buscando */ }
+    i = fin;
+  }
+  return null;
 }
 
 function renderAjustes() {
