@@ -718,16 +718,30 @@ function leerCfg() {
   try { return Object.assign({ firebase: null, sheets: '', clave: '' }, JSON.parse(localStorage.getItem(KC) || '{}')); }
   catch (e) { return { firebase: null, sheets: '', clave: '' }; }
 }
-/* Clave secreta de la bodega: nombra el cajón privado donde viven los pedidos.
-   Vive solo en las tabletas de José — nunca en el repositorio público. */
-function claveNueva() {
-  const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-  const n = 24, a = new Uint32Array(n);
-  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
-  else for (let i = 0; i < n; i++) a[i] = Math.floor(Math.random() * 4294967295);
-  let s = '';
-  for (let i = 0; i < n; i++) s += abc[a[i] % abc.length];
+/* Clave del cajón privado. NO es al azar: se deduce de tu propio Firebase,
+   así que todas las tabletas con la misma configuración caen en el mismo
+   cajón sin tener que copiarse nada. Sigue sin viajar al repositorio. */
+const ABC_CLAVE = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+function hashSimple(txt) {
+  let s = '', h = 0x811c9dc5 >>> 0;
+  for (let ronda = 0; ronda < 24; ronda++) {
+    for (let i = 0; i < txt.length; i++) { h ^= txt.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+    h = (h ^ Math.imul(ronda + 1, 2654435761)) >>> 0;
+    s += ABC_CLAVE[h % ABC_CLAVE.length];
+  }
   return s;
+}
+async function claveDeConfig(cfg) {
+  const semilla = 'casa-munoz|' + ((cfg && cfg.apiKey) || '') + '|' + ((cfg && cfg.databaseURL) || '');
+  try {
+    if (window.crypto && crypto.subtle && window.isSecureContext) {
+      const h = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(semilla)));
+      let s = '';
+      for (let i = 0; i < 24; i++) s += ABC_CLAVE[h[i] % ABC_CLAVE.length];
+      return s;
+    }
+  } catch (e) { /* sin cripto: abajo el respaldo */ }
+  return hashSimple(semilla);
 }
 const REGLAS = `{
   "rules": {
@@ -741,9 +755,6 @@ const REGLAS = `{
 }`;
 function guardarCfg(c) { try { localStorage.setItem(KC, JSON.stringify(c)); } catch (e) {} }
 let CFG = leerCfg();
-/* Aparato que conectó la nube antes de que existieran las claves:
-   se le crea la suya para que no se quede sin sincronizar en silencio. */
-if (CFG.firebase && CFG.firebase.apiKey && !CFG.clave) { CFG.clave = claveNueva(); guardarCfg(CFG); }
 const FIREBASE_CONFIG = CFG.firebase;   // sincroniza tabletas y TV en vivo
 const SHEETS_URL      = CFG.sheets;     // Google Apps Script → Excel en su Drive
 
@@ -824,7 +835,7 @@ function iniciarDia() {
     const viejo = db.cortes.shift();
     db.pedidos = db.pedidos.filter(p => p.corteId !== viejo.id);
   }
-  persistir();
+  persistir(); nubeCorte(c);
   aSheets('dia_inicio', { corte: c.id, fecha: c.fecha, inicio: hhmm(ahora) });
   location.hash = '#menu';
   toast('🌅 ¡Día iniciado! Buen turno, Casa Muñoz');
@@ -844,7 +855,7 @@ function cerrarDia(silencioso) {
   c.fin = Date.now();
   const ent = peds.filter(p => p.estado === 'entregado');
   const prom = ent.length ? Math.round(ent.reduce((s, p) => s + (p.minutosTotal || 0), 0) / ent.length) : 0;
-  persistir();
+  persistir(); nubeCorte(c);
   aSheets('dia_cierre', { corte: c.id, fecha: c.fecha, cierre: hhmm(c.fin),
     pedidos: peds.length, entregados: ent.length, promedioMin: prom });
   if (!silencioso) { location.hash = '#inicio'; toast('🌙 Día cerrado · ' + peds.length + ' pedidos'); }
@@ -858,8 +869,8 @@ function recibirCambio() {
   const nuevo = leerLS();
   if (nuevo && (nuevo.updatedAt || 0) > (db.updatedAt || 0)) { db = nuevo; renderRuta(); }
 }
-let nubeSet = null, nubeT = null, nubeProbar = null;
-let nubeEstado = FIREBASE_CONFIG && CFG.clave ? 'conectando' : 'apagada';
+let nubeEscribir = null, nubeProbar = null, ultimaNube = 0;
+let nubeEstado = FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey ? 'conectando' : 'apagada';
 function pintarNube() {
   const chip = $('#nubeChip');
   const mapa = {
@@ -875,54 +886,96 @@ function pintarNube() {
   chip.style.background = color;
   if (location.hash === '#ajustes') renderAjustes();
 }
-/* Candado: una tableta recién conectada NO escribe en la nube hasta haber
-   recibido lo que ya hay allá. Si no, subiría su base vacía y borraría el día. */
-let nubeLista = false, nubePendiente = false;
-function nubePush() {
-  if (!nubeSet) return;
-  if (!nubeLista) { nubePendiente = true; return; }
-  clearTimeout(nubeT);
-  nubeT = setTimeout(() => nubeSet(db), 250);
+/* ══════ La nube, registro por registro ══════
+   Antes se subía el documento completo y ganaba "el reloj más adelantado".
+   Con tabletas cuyos relojes no coinciden, una podía ignorar para siempre
+   los cambios de la otra. Ahora cada pedido es su propio cajoncito:
+   se escribe solo lo que cambió y al leer se fusiona, sin comparar relojes. */
+let nubeLista = false, nubePendientes = [];
+
+const aMapa  = arr => { const m = {}; (arr || []).forEach(o => { if (o && o.id) m[o.id] = o; }); return m; };
+const aLista = m => Object.keys(m || {}).map(k => m[k]).filter(Boolean);
+
+function nubeGuardar(ruta, valor) {
+  if (!nubeEscribir) return;
+  if (!nubeLista) { nubePendientes.push([ruta, valor]); return; }
+  nubeEscribir(ruta, valor);
 }
+const nubePedido    = p => nubeGuardar('pedidos/' + p.id, p);
+const nubeCorte     = c => nubeGuardar('cortes/' + c.id, c);
+const nubeProductos = () => nubeGuardar('productos', aMapa(db.productos));
+
+/* Fusión: pedidos y cortes se unen (nunca se borran); el catálogo de
+   productos sí manda desde la nube, para que un borrado se propague. */
+function fusionarNube(remoto, primeraVez) {
+  let cambio = false;
+  const subir = [];
+  for (const campo of ['cortes', 'pedidos']) {
+    const loc = aMapa(db[campo]), rem = (remoto && remoto[campo]) || {};
+    const res = {};
+    for (const id in rem) {
+      res[id] = rem[id];
+      if (JSON.stringify(loc[id]) !== JSON.stringify(rem[id])) cambio = true;
+    }
+    for (const id in loc) if (!res[id]) { res[id] = loc[id]; subir.push([campo + '/' + id, loc[id]]); }
+    const orden = campo === 'cortes' ? 'inicio' : 'creado';
+    const lista = aLista(res).sort((a, b) => (a[orden] || 0) - (b[orden] || 0));
+    if (lista.length !== (db[campo] || []).length) cambio = true;
+    db[campo] = lista;
+  }
+  const remProd = remoto && remoto.productos;
+  if (remProd && Object.keys(remProd).length) {
+    const lista = aLista(remProd);
+    if (JSON.stringify(lista) !== JSON.stringify(db.productos)) { db.productos = lista; cambio = true; }
+  } else if (primeraVez && (db.productos || []).length) {
+    subir.push(['productos', aMapa(db.productos)]);
+  }
+  if (cambio) { escribirLS(); renderRuta(); }
+  return subir;
+}
+
 async function initNube() {
-  if (!FIREBASE_CONFIG || !CFG.clave) return;
+  if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) return;
+
+  /* La clave se DEDUCE de tu propio Firebase: dos tabletas con la misma
+     configuración caen siempre en el mismo cajón, sin copiar nada.
+     Se calcula ANTES de cargar Firebase, para que se vea aunque no haya red. */
+  const clave = await claveDeConfig(FIREBASE_CONFIG);
+  if (CFG.clave !== clave) { CFG.clave = clave; guardarCfg(CFG); renderAjustesSiVisible(); }
+
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const { getDatabase, ref, onValue, set, get } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
     const bd = getDatabase(initializeApp(FIREBASE_CONFIG));
-    const r = ref(bd, 'bodegas/' + CFG.clave);
+    const base = 'bodegas/' + clave;
     onValue(ref(bd, '.info/connected'), s => { nubeEstado = s.val() ? 'viva' : 'caida'; pintarNube(); });
-    nubeSet = d => set(r, JSON.parse(JSON.stringify(d))).catch(e => { nubeEstado = 'error'; pintarNube(); });
-    /* Prueba de ida y vuelta: escribe una marca en el cajón y la lee de regreso. */
+    nubeEscribir = (ruta, valor) =>
+      set(ref(bd, base + '/' + ruta), JSON.parse(JSON.stringify(valor)))
+        .catch(() => { nubeEstado = 'error'; pintarNube(); });
     nubeProbar = async () => {
       const marca = 'prueba-' + Date.now();
-      const pr = ref(bd, 'bodegas/' + CFG.clave + '/_prueba');
-      await set(pr, marca);
-      const snap = await get(pr);
-      return snap.val() === marca;
+      await set(ref(bd, base + '/_prueba'), marca);
+      return (await get(ref(bd, base + '/_prueba'))).val() === marca;
     };
-    onValue(r, snap => {
-      const remoto = snap.val();
-      if (remoto && (remoto.updatedAt || 0) > (db.updatedAt || 0)) {
-        db = remoto;
-        if (!Array.isArray(db.productos)) db.productos = [];
-        if (!Array.isArray(db.pedidos)) db.pedidos = [];
-        if (!Array.isArray(db.cortes)) db.cortes = [];
-        escribirLS(); renderRuta();
-      }
-      if (!nubeLista) {                 // ya sabemos qué hay en la nube: se abre el candado
+
+    onValue(ref(bd, base), snap => {
+      const primeraVez = !nubeLista;
+      const subir = fusionarNube(snap.val(), primeraVez);
+      if (primeraVez) {
         nubeLista = true;
-        if (nubePendiente) { nubePendiente = false; nubePush(); }
+        subir.forEach(([r, v]) => nubeEscribir(r, v));
+        nubePendientes.forEach(([r, v]) => nubeEscribir(r, v));
+        nubePendientes = [];
       }
+      ultimaNube = Date.now();
     });
-    nubePush();
   } catch (e) { nubeEstado = 'error'; pintarNube(); console.warn('Sin nube por ahora:', e); }
 }
+
 function persistir() {
   db.updatedAt = Date.now();
   escribirLS();
   if (bc) try { bc.postMessage('u'); } catch (e) {}
-  nubePush();
 }
 
 /* ───── Excel en Google Drive (Apps Script) ───── */
@@ -1064,6 +1117,8 @@ function parseFirebase(txt) {
   return null;
 }
 
+function renderAjustesSiVisible() { if (location.hash === '#ajustes') renderAjustes(); }
+
 function renderAjustes() {
   const c = leerCfg();
   const nube = !!(c.firebase && c.firebase.apiKey);
@@ -1094,8 +1149,7 @@ function guardarNube() {
   const c = leerCfg();
   c.firebase = cfgNueva;
   if (o.sheets) c.sheets = o.sheets;                // el código corto trae todo
-  if (o.clave) c.clave = o.clave;
-  if (!c.clave) c.clave = claveNueva();             // primera tableta: cajón nuevo
+  /* La clave ya no se copia ni se sortea: la deduce initNube de tu Firebase. */
   guardarCfg(c);
   toast('☁️ Nube conectada · recargando…');
   setTimeout(() => location.reload(), 900);
@@ -1187,8 +1241,6 @@ function aplicarLigaConfig() {
   const c = leerCfg();
   if (o.firebase) c.firebase = o.firebase;
   if (o.sheets) c.sheets = o.sheets;
-  if (o.clave) c.clave = o.clave;
-  if (c.firebase && !c.clave) c.clave = claveNueva();
   guardarCfg(c);
   limpiar();                                   // no dejamos las llaves en la barra del navegador
   toast('✅ ¡Tableta configurada! Recargando…');
@@ -1261,7 +1313,7 @@ function cambiarEstado(id, est) {
     p.entregadoTs = ahora;
     p.minutosTotal = Math.max(0, Math.round((ahora - p.creado) / 60000));
   }
-  persistir(); renderRuta();
+  persistir(); nubePedido(p); renderRuta();
   aSheets('cambio_estado', filaPedido(p));
   if (est === 'entregado') toast(`🚚 #${p.folio} entregado en ${durTxt(p.minutosTotal)}`);
 }
@@ -1354,7 +1406,7 @@ function guardarPedido() {
     items, creado: ahora, estado: 'solicitado', ts: { solicitado: ahora },
     entregadoTs: null, minutosTotal: null };
   db.pedidos.push(nuevo);
-  persistir();
+  persistir(); nubePedido(nuevo);
   aSheets('pedido_nuevo', filaPedido(nuevo));
   draft = {}; paso = 1; $('#inCliente').value = ''; $('#inNota').value = '';
   location.hash = '#pedidos';
@@ -1488,8 +1540,9 @@ function agregarProducto() {
   const pres = $('#npPres').value.split(',').map(s => s.trim()).filter(Boolean);
   if (!nombre) { toast('Escribe el nombre del producto'); $('#npNombre').focus(); return; }
   if (!pres.length) { toast('Pon al menos una presentación (ej. 1 kg)'); $('#npPres').focus(); return; }
-  db.productos.push({ id: uid(), cat: $('#npCat').value, nombre, pres: pres.map(n => ({ n, precio: 0 })) });
-  persistir();
+  db.productos.push({ id: uid(), cat: $('#npCat').value, nombre, pic: PIC_CAT[$('#npCat').value],
+                      pres: pres.map(n => ({ n, precio: 0 })) });
+  persistir(); nubeProductos();
   $('#npNombre').value = ''; $('#npPres').value = '';
   renderModal();
   if (location.hash === '#nuevo') renderNuevo();
@@ -1569,7 +1622,7 @@ $('#listaProd').addEventListener('change', e => {
   const p = db.productos.find(x => x.id === pid);
   if (p && p.pres[Number(idx)]) {
     p.pres[Number(idx)].precio = Math.max(0, Number(e.target.value) || 0);
-    persistir();
+    persistir(); nubeProductos();
     if (location.hash === '#nuevo') renderNuevo();
   }
 });
@@ -1580,7 +1633,7 @@ $('#listaProd').addEventListener('click', e => {
   if (p && confirm(`¿Quitar «${p.nombre}» de la lista de productos?`)) {
     db.productos = db.productos.filter(x => x.id !== id);
     for (const k of Object.keys(draft)) if (k.startsWith(id + '|')) delete draft[k];
-    persistir(); renderModal();
+    persistir(); nubeProductos(); renderModal();
     if (location.hash === '#nuevo') renderNuevo();
   }
 });
