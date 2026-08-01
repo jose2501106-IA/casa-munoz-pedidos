@@ -468,6 +468,7 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
   </div>
 </div>
 
+<div id="nubeChip" class="nubeChip oculto"></div>
 <div id="toast" class="toast oculto"></div>
 
 <script>
@@ -616,14 +617,32 @@ function recibirCambio() {
   if (nuevo && (nuevo.updatedAt || 0) > (db.updatedAt || 0)) { db = nuevo; renderRuta(); }
 }
 let nubeSet = null, nubeT = null;
+let nubeEstado = FIREBASE_CONFIG && CFG.clave ? 'conectando' : 'apagada';
+function pintarNube() {
+  const chip = $('#nubeChip');
+  const mapa = {
+    apagada:    ['', ''],
+    conectando: ['⏳ Conectando…', '#6B4A2F'],
+    viva:       ['☁️ Nube en vivo', '#2F8B57'],
+    caida:      ['⚠️ Sin nube', '#C94F44'],
+    error:      ['⚠️ Error de nube', '#C94F44'],
+  };
+  const [txt, color] = mapa[nubeEstado] || mapa.apagada;
+  chip.classList.toggle('oculto', !txt || location.hash === '#ajustes' || location.hash === '#inicio');
+  chip.textContent = txt;
+  chip.style.background = color;
+  if (location.hash === '#ajustes') renderAjustes();
+}
 function nubePush() { if (!nubeSet) return; clearTimeout(nubeT); nubeT = setTimeout(() => nubeSet(db), 250); }
 async function initNube() {
   if (!FIREBASE_CONFIG || !CFG.clave) return;
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const { getDatabase, ref, onValue, set } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
-    const r = ref(getDatabase(initializeApp(FIREBASE_CONFIG)), 'bodegas/' + CFG.clave);
-    nubeSet = d => set(r, JSON.parse(JSON.stringify(d))).catch(() => {});
+    const bd = getDatabase(initializeApp(FIREBASE_CONFIG));
+    const r = ref(bd, 'bodegas/' + CFG.clave);
+    onValue(ref(bd, '.info/connected'), s => { nubeEstado = s.val() ? 'viva' : 'caida'; pintarNube(); });
+    nubeSet = d => set(r, JSON.parse(JSON.stringify(d))).catch(e => { nubeEstado = 'error'; pintarNube(); });
     onValue(r, snap => {
       const remoto = snap.val();
       if (remoto && (remoto.updatedAt || 0) > (db.updatedAt || 0)) {
@@ -635,7 +654,7 @@ async function initNube() {
       }
     });
     nubePush();
-  } catch (e) { console.warn('Sin nube por ahora:', e); }
+  } catch (e) { nubeEstado = 'error'; pintarNube(); console.warn('Sin nube por ahora:', e); }
 }
 function persistir() {
   db.updatedAt = Date.now();
@@ -700,6 +719,7 @@ function renderRuta() {
   $('#vMenu').classList.toggle('oculto', h !== '#menu');
   $('#vApp').classList.toggle('oculto', !RUTAS_APP.includes(h));
 
+  pintarNube();
   if (h === '#ajustes') { renderAjustes(); return; }
   if (h === '#inicio') { renderInicio(); return; }
   const et = corte ? `📅 ${fechaLarga(corte.inicio)} · desde ${hhmm(corte.inicio)}` : '';
@@ -785,8 +805,10 @@ function renderAjustes() {
   const c = leerCfg();
   const nube = !!(c.firebase && c.firebase.apiKey);
   const excel = !!c.sheets;
-  $('#luzNube').textContent = nube ? '🟢 Conectada' : 'Sin conectar';
-  $('#luzNube').className = 'luz ' + (nube ? 'on' : 'off');
+  const rotulo = { conectando: '⏳ Conectando…', viva: '🟢 Conectada y sincronizando',
+                   caida: '⚠️ Configurada, pero sin señal', error: '⚠️ Error al conectar' };
+  $('#luzNube').textContent = nube ? (rotulo[nubeEstado] || '🟢 Conectada') : 'Sin conectar';
+  $('#luzNube').className = 'luz ' + (nube && nubeEstado !== 'error' && nubeEstado !== 'caida' ? 'on' : 'off');
   $('#luzExcel').textContent = excel ? '🟢 Conectado' : 'Sin conectar';
   $('#luzExcel').className = 'luz ' + (excel ? 'on' : 'off');
   $('#luzCodigo').textContent = (nube || excel) ? 'Listo' : 'Nada que copiar';
