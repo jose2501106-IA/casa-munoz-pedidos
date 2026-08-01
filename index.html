@@ -337,6 +337,7 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
         <textarea id="txtFirebase" placeholder="const firebaseConfig = {&#10;  apiKey: &quot;AIza…&quot;,&#10;  databaseURL: &quot;https://…-default-rtdb.firebaseio.com&quot;,&#10;  …&#10;};"></textarea>
         <div class="cnxBtns">
           <button class="btnCnx" id="btnGuardarNube">Conectar nube</button>
+          <button class="btnCnx blanco" id="btnProbarNube">🔍 Probar la nube</button>
           <button class="btnCnx blanco" id="btnQuitarNube">Quitar</button>
         </div>
         <div class="pasosMini oculto" id="cajaClave">
@@ -628,7 +629,7 @@ function recibirCambio() {
   const nuevo = leerLS();
   if (nuevo && (nuevo.updatedAt || 0) > (db.updatedAt || 0)) { db = nuevo; renderRuta(); }
 }
-let nubeSet = null, nubeT = null;
+let nubeSet = null, nubeT = null, nubeProbar = null;
 let nubeEstado = FIREBASE_CONFIG && CFG.clave ? 'conectando' : 'apagada';
 function pintarNube() {
   const chip = $('#nubeChip');
@@ -658,11 +659,19 @@ async function initNube() {
   if (!FIREBASE_CONFIG || !CFG.clave) return;
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-    const { getDatabase, ref, onValue, set } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+    const { getDatabase, ref, onValue, set, get } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
     const bd = getDatabase(initializeApp(FIREBASE_CONFIG));
     const r = ref(bd, 'bodegas/' + CFG.clave);
     onValue(ref(bd, '.info/connected'), s => { nubeEstado = s.val() ? 'viva' : 'caida'; pintarNube(); });
     nubeSet = d => set(r, JSON.parse(JSON.stringify(d))).catch(e => { nubeEstado = 'error'; pintarNube(); });
+    /* Prueba de ida y vuelta: escribe una marca en el cajón y la lee de regreso. */
+    nubeProbar = async () => {
+      const marca = 'prueba-' + Date.now();
+      const pr = ref(bd, 'bodegas/' + CFG.clave + '/_prueba');
+      await set(pr, marca);
+      const snap = await get(pr);
+      return snap.val() === marca;
+    };
     onValue(r, snap => {
       const remoto = snap.val();
       if (remoto && (remoto.updatedAt || 0) > (db.updatedAt || 0)) {
@@ -861,6 +870,22 @@ function guardarNube() {
   guardarCfg(c);
   toast('☁️ Nube conectada · recargando…');
   setTimeout(() => location.reload(), 900);
+}
+
+async function probarNube() {
+  const c = leerCfg();
+  if (!c.firebase || !c.firebase.apiKey) { toast('Primero pega tu configuración y pica «Conectar nube»'); return; }
+  if (!nubeProbar) { toast('⚠️ La nube no arrancó. Revisa que la configuración traiga databaseURL, o recarga la página.'); return; }
+  toast('🔍 Probando la nube…');
+  try {
+    const ok = await nubeProbar();
+    toast(ok ? '✅ ¡La nube funciona! Escribí y leí de regreso, todo bien'
+             : '⚠️ Escribió pero no leyó lo mismo. Vuelve a intentar.');
+  } catch (e) {
+    const m = String((e && e.message) || e);
+    if (/permission|denied/i.test(m)) toast('❌ Permiso denegado: revisa las Reglas en Firebase');
+    else toast('❌ Falló: ' + m.slice(0, 70));
+  }
 }
 
 function quitarNube() {
@@ -1256,6 +1281,7 @@ $('#btnGuardar').addEventListener('click', guardarPedido);
 $('#btnAjustes').addEventListener('click', () => { location.hash = '#ajustes'; });
 $('#btnGuardarNube').addEventListener('click', guardarNube);
 $('#btnQuitarNube').addEventListener('click', quitarNube);
+$('#btnProbarNube').addEventListener('click', probarNube);
 $('#btnGuardarExcel').addEventListener('click', guardarExcel);
 $('#btnProbarExcel').addEventListener('click', probarExcel);
 $('#btnCopiarCfg').addEventListener('click', copiarCfg);
