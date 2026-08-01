@@ -330,6 +330,17 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
           <button class="btnCnx" id="btnGuardarNube">Conectar nube</button>
           <button class="btnCnx blanco" id="btnQuitarNube">Quitar</button>
         </div>
+        <div class="pasosMini oculto" id="cajaClave">
+          <b>🔑 Clave de tu bodega</b> — tus pedidos se guardan en un cajón privado con este nombre.
+          Las tres tabletas deben tener <b>la misma clave</b> (usa el botón «Copiar mi configuración» de arriba).
+          <div class="codigoCopia" id="claveTxt"></div>
+        </div>
+        <div class="pasosMini">
+          <b>🔒 Último paso de seguridad.</b> En Firebase entra a <b>Realtime Database → pestaña Reglas</b>,
+          borra lo que haya, pega esto y pica <b>Publicar</b>. Con eso tus datos quedan protegidos y <b>ya no caducan a los 30 días</b>:
+          <div class="cnxBtns"><button class="btnCnx blanco" id="btnReglas">🔒 Copiar las reglas</button></div>
+          <div class="codigoCopia" id="reglasTxt"></div>
+        </div>
       </div>
 
       <div class="cnxBloque">
@@ -470,9 +481,30 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
    Se guardan solo en ese aparato — nunca viajan al repositorio público. ───── */
 const KC = 'casaMunozConexiones_v1';
 function leerCfg() {
-  try { return Object.assign({ firebase: null, sheets: '' }, JSON.parse(localStorage.getItem(KC) || '{}')); }
-  catch (e) { return { firebase: null, sheets: '' }; }
+  try { return Object.assign({ firebase: null, sheets: '', clave: '' }, JSON.parse(localStorage.getItem(KC) || '{}')); }
+  catch (e) { return { firebase: null, sheets: '', clave: '' }; }
 }
+/* Clave secreta de la bodega: nombra el cajón privado donde viven los pedidos.
+   Vive solo en las tabletas de José — nunca en el repositorio público. */
+function claveNueva() {
+  const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const n = 24, a = new Uint32Array(n);
+  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
+  else for (let i = 0; i < n; i++) a[i] = Math.floor(Math.random() * 4294967295);
+  let s = '';
+  for (let i = 0; i < n; i++) s += abc[a[i] % abc.length];
+  return s;
+}
+const REGLAS = `{
+  "rules": {
+    "bodegas": {
+      "$clave": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}`;
 function guardarCfg(c) { try { localStorage.setItem(KC, JSON.stringify(c)); } catch (e) {} }
 let CFG = leerCfg();
 const FIREBASE_CONFIG = CFG.firebase;   // sincroniza tabletas y TV en vivo
@@ -586,11 +618,11 @@ function recibirCambio() {
 let nubeSet = null, nubeT = null;
 function nubePush() { if (!nubeSet) return; clearTimeout(nubeT); nubeT = setTimeout(() => nubeSet(db), 250); }
 async function initNube() {
-  if (!FIREBASE_CONFIG) return;
+  if (!FIREBASE_CONFIG || !CFG.clave) return;
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const { getDatabase, ref, onValue, set } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
-    const r = ref(getDatabase(initializeApp(FIREBASE_CONFIG)), 'casa-munoz/gestor');
+    const r = ref(getDatabase(initializeApp(FIREBASE_CONFIG)), 'bodegas/' + CFG.clave);
     nubeSet = d => set(r, JSON.parse(JSON.stringify(d))).catch(() => {});
     onValue(r, snap => {
       const remoto = snap.val();
@@ -747,6 +779,9 @@ function renderAjustes() {
   $('#luzExcel').className = 'luz ' + (excel ? 'on' : 'off');
   $('#luzCodigo').textContent = (nube || excel) ? 'Listo' : 'Nada que copiar';
   $('#luzCodigo').className = 'luz ' + ((nube || excel) ? 'on' : 'off');
+  $('#cajaClave').classList.toggle('oculto', !c.clave);
+  $('#claveTxt').textContent = c.clave || '';
+  $('#reglasTxt').textContent = REGLAS;
   if (!$('#txtFirebase').value && nube) $('#txtFirebase').value = JSON.stringify(c.firebase, null, 2);
   if (!$('#txtSheets').value && excel) $('#txtSheets').value = c.sheets;
 }
@@ -761,7 +796,9 @@ function guardarNube() {
   }
   const c = leerCfg();
   c.firebase = cfgNueva;
-  if (o.sheets) c.sheets = o.sheets;                // el código corto trae ambas
+  if (o.sheets) c.sheets = o.sheets;                // el código corto trae todo
+  if (o.clave) c.clave = o.clave;
+  if (!c.clave) c.clave = claveNueva();             // primera tableta: cajón nuevo
   guardarCfg(c);
   toast('☁️ Nube conectada · recargando…');
   setTimeout(() => location.reload(), 900);
@@ -805,7 +842,7 @@ async function probarExcel() {
 function copiarCfg() {
   const c = leerCfg();
   if (!c.firebase && !c.sheets) { toast('Todavía no hay nada configurado en esta tableta'); return; }
-  const codigo = 'CM1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ firebase: c.firebase, sheets: c.sheets }))));
+  const codigo = 'CM1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ firebase: c.firebase, sheets: c.sheets, clave: c.clave }))));
   const caja = $('#codigoCfg');
   caja.textContent = codigo;
   caja.classList.remove('oculto');
@@ -1119,6 +1156,12 @@ $('#btnQuitarNube').addEventListener('click', quitarNube);
 $('#btnGuardarExcel').addEventListener('click', guardarExcel);
 $('#btnProbarExcel').addEventListener('click', probarExcel);
 $('#btnCopiarCfg').addEventListener('click', copiarCfg);
+$('#btnReglas').addEventListener('click', () => {
+  if (navigator.clipboard) navigator.clipboard.writeText(REGLAS).then(
+    () => toast('🔒 Reglas copiadas · pégalas en Firebase → Reglas'),
+    () => toast('Copia a mano las reglas de abajo'));
+  else toast('Copia a mano las reglas de abajo');
+});
 $('#btnExcel').addEventListener('click', descargarExcel);
 $('#btnCerrarDia2').addEventListener('click', () => cerrarDia(false));
 $('#btnEditarCat').addEventListener('click', () => { renderModal(); $('#modalFondo').classList.remove('oculto'); });
