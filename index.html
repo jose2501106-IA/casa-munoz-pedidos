@@ -316,9 +316,13 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
 
       <div class="cnxBloque">
         <h3>📋 Copiar a otra tableta <span class="luz off" id="luzCodigo">—</span></h3>
-        <p class="ex">Si ya configuraste una tableta, aquí sale un código corto. Pégalo en la caja de abajo de las otras tabletas y quedan iguales de un jalón.</p>
-        <div class="cnxBtns"><button class="btnCnx blanco" id="btnCopiarCfg">📋 Copiar mi configuración</button></div>
+        <p class="ex">Lo más fácil: genera una <b>liga mágica</b>, mándatela por WhatsApp y ábrela en las otras tabletas — se configuran solas, sin copiar ni pegar nada.</p>
+        <div class="cnxBtns">
+          <button class="btnCnx" id="btnLigaCfg">📱 Liga para las otras tabletas</button>
+          <button class="btnCnx blanco" id="btnCopiarCfg">📋 Solo el código</button>
+        </div>
         <div class="codigoCopia oculto" id="codigoCfg"></div>
+        <p class="ex" id="avisoLiga" style="margin-top:10px"></p>
       </div>
 
       <div class="cnxBloque">
@@ -726,6 +730,7 @@ const filaPedido = p => ({
 /* ───── Router ───── */
 const RUTAS_APP = ['#pedidos', '#nuevo', '#dashboard'];
 function renderRuta() {
+  if (aplicarLigaConfig()) return;
   let h = location.hash || '#inicio';
   const corte = corteAbierto();
   if (!corte && h !== '#inicio' && h !== '#ajustes') { location.hash = '#inicio'; return; }
@@ -890,10 +895,54 @@ async function probarExcel() {
   }
 }
 
-function copiarCfg() {
+function codigoCfg() {
   const c = leerCfg();
-  if (!c.firebase && !c.sheets) { toast('Todavía no hay nada configurado en esta tableta'); return; }
-  const codigo = 'CM1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ firebase: c.firebase, sheets: c.sheets, clave: c.clave }))));
+  if (!c.firebase && !c.sheets) return null;
+  return 'CM1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ firebase: c.firebase, sheets: c.sheets, clave: c.clave }))));
+}
+
+/* Liga mágica: al abrirla, la otra tableta se configura sola. */
+function ligaTabletas() {
+  const codigo = codigoCfg();
+  if (!codigo) { toast('Todavía no hay nada configurado en esta tableta'); return; }
+  const base = (location.origin && location.origin !== 'null')
+    ? location.origin + location.pathname
+    : location.href.split('#')[0];
+  const liga = base + '#config=' + encodeURIComponent(codigo);
+  const caja = $('#codigoCfg');
+  caja.textContent = liga;
+  caja.classList.remove('oculto');
+  $('#avisoLiga').textContent = '⚠️ Esta liga trae tus llaves: mándatela solo a ti o a tu gente de confianza, no la publiques.';
+  if (navigator.clipboard) navigator.clipboard.writeText(liga).then(
+    () => toast('📱 Liga copiada · mándatela por WhatsApp y ábrela en la otra tableta'),
+    () => toast('Copia la liga de abajo a mano'));
+  else toast('Copia la liga de abajo a mano');
+}
+
+/* Al abrir una liga con configuración, la tableta se arma sola. */
+function aplicarLigaConfig() {
+  const m = (location.hash || '').match(/^#config=(.+)$/);
+  if (!m) return false;
+  let o = null;
+  try { o = parseFirebase(decodeURIComponent(m[1])); } catch (e) { o = null; }
+  const limpiar = () => history.replaceState(null, '', location.pathname + location.search + '#inicio');
+  if (!o) { limpiar(); toast('Esa liga no se entendió — pide una nueva'); return false; }
+  const c = leerCfg();
+  if (o.firebase) c.firebase = o.firebase;
+  if (o.sheets) c.sheets = o.sheets;
+  if (o.clave) c.clave = o.clave;
+  if (c.firebase && !c.clave) c.clave = claveNueva();
+  guardarCfg(c);
+  limpiar();                                   // no dejamos las llaves en la barra del navegador
+  toast('✅ ¡Tableta configurada! Recargando…');
+  setTimeout(() => location.reload(), 1000);
+  return true;
+}
+
+function copiarCfg() {
+  const codigo = codigoCfg();
+  if (!codigo) { toast('Todavía no hay nada configurado en esta tableta'); return; }
+  $('#avisoLiga').textContent = '';
   const caja = $('#codigoCfg');
   caja.textContent = codigo;
   caja.classList.remove('oculto');
@@ -1207,6 +1256,7 @@ $('#btnQuitarNube').addEventListener('click', quitarNube);
 $('#btnGuardarExcel').addEventListener('click', guardarExcel);
 $('#btnProbarExcel').addEventListener('click', probarExcel);
 $('#btnCopiarCfg').addEventListener('click', copiarCfg);
+$('#btnLigaCfg').addEventListener('click', ligaTabletas);
 $('#btnReglas').addEventListener('click', () => {
   if (navigator.clipboard) navigator.clipboard.writeText(REGLAS).then(
     () => toast('🔒 Reglas copiadas · pégalas en Firebase → Reglas'),
