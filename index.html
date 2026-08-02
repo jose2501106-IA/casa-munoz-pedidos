@@ -999,7 +999,7 @@ function cerrarDia(silencioso) {
   persistir(); nubeCorte(c);
   aSheets('dia_cierre', { corte: c.id, fecha: c.fecha, cierre: hhmm(c.fin),
     pedidos: peds.length, entregados: ent.length, promedioMin: prom });
-  if (!silencioso) { location.hash = '#inicio'; toast('🌙 Día cerrado · ' + peds.length + ' pedidos'); }
+  if (!silencioso) { location.hash = '#inicio'; renderRuta(); toast('🌙 Día cerrado · ' + peds.length + ' pedidos'); }
 }
 
 /* ───── Sincronización entre pestañas / aparatos ───── */
@@ -1164,12 +1164,29 @@ const filaPedido = p => ({
 
 /* ───── Router ───── */
 const RUTAS_APP = ['#pedidos', '#nuevo', '#dashboard'];
+
+/* Mientras el día siga abierto, abrir la app en CUALQUIER aparato entra
+   directo — a la pantalla que ese aparato usa (mostrador o dashboard).
+   La pantalla de inicio solo aparece sin día abierto, o al picar ←. */
+let autoEntrada = true;
+const KV = 'casaMunozVista';
+function vistaDeEsteAparato() {
+  try { const v = localStorage.getItem(KV); if (v === '#pedidos' || v === '#dashboard') return v; } catch (e) {}
+  return '#menu';
+}
+
 function renderRuta() {
   if (aplicarLigaConfig()) return;
   let h = location.hash || '#inicio';
   const corte = corteAbierto();
   if (!corte && h !== '#inicio' && h !== '#ajustes') { location.hash = '#inicio'; return; }
   if (h === '#menu' && !corte) h = '#inicio';
+  if (autoEntrada && h === '#inicio' && corte && corte.fecha === fechaISO(Date.now())) {
+    autoEntrada = false;
+    location.hash = vistaDeEsteAparato();   // el día abierto te absorbe solo
+    return;
+  }
+  if (h === '#pedidos' || h === '#dashboard') { try { localStorage.setItem(KV, h); } catch (e) {} }
 
   $('#vInicio').classList.toggle('oculto', h !== '#inicio');
   $('#vAjustes').classList.toggle('oculto', h !== '#ajustes');
@@ -1192,7 +1209,7 @@ function renderRuta() {
   if (h === '#nuevo') { if (cartCount() === 0) paso = 1; renderNuevo(); }
   if (h === '#dashboard') renderDashboard();
 }
-window.addEventListener('hashchange', () => { renderRuta(); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => { autoEntrada = false; renderRuta(); window.scrollTo(0, 0); });
 
 /* ───── 0 · Pantalla de iniciar día ───── */
 function renderInicio() {
@@ -1221,7 +1238,7 @@ function renderInicio() {
         <div class="miniKpi"><div class="n">${prom || '—'}</div><small>Min prom.</small></div>
       </div>
       <button class="btnDia verde hoverable" id="btnSeguir">Continuar día →</button>
-      <button class="ligaSuave" id="btnCerrarDia">🌙 Cerrar día</button>`;
+      <button class="ligaSuave" id="btnCerrarDia">🌙 Cerrar pedidos del día</button>`;
   }
   const bi = $('#btnIniciar'); if (bi) bi.onclick = iniciarDia;
   const bs = $('#btnSeguir'); if (bs) bs.onclick = () => { location.hash = '#menu'; };
