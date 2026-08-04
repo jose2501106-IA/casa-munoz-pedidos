@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Casa Muñoz · Gestor de Pedidos</title>
-<meta name="theme-color" content="#2B2620">
+<meta name="theme-color" content="#4E1F00">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥚</text></svg>">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icono-192.png">
@@ -24,15 +24,15 @@
   /* ══ TEMA HUESO ══  Una sola familia: hueso + tinta cálida.
      Los únicos colores con permiso de existir son funcionales:
      rojo apagado = urgente · verde oliva = entregado. Nada más. */
-  --crema:#F6F1E7;   /* hueso: el fondo de todo   */
-  --blanco:#FFFDF8;  /* tarjetas                  */
-  --arena:#EFE8D8;   /* rellenos suaves           */
-  --durazno:#F1EADA; /* rellenos aún más suaves   */
-  --salvia:#DED4BE;  /* (nombre heredado) línea   */
-  --hoja:#2B2620;    /* (nombre heredado) tinta   */
+  --crema:#F8F4E1;   /* hueso: el fondo de todo   */
+  --blanco:#FFFDF4;  /* tarjetas                  */
+  --arena:#F1E9D0;   /* rellenos suaves           */
+  --durazno:#F4EEDC; /* rellenos aún más suaves   */
+  --salvia:#E3D9BE;  /* (nombre heredado) línea   */
+  --hoja:#4E1F00;    /* (nombre heredado) tinta   */
 
-  --cafe:#2B2620; --cafe-2:#6E6355; --cafe-suave:#A2957F; --gris:#C7BCA6;
-  --yema:#F7A82B;
+  --cafe:#4E1F00; --cafe-2:#74512D; --cafe-suave:#A5896A; --gris:#C8B79E;
+  --yema:#FEBA17;
 
   --verde:#3E8E3F; --verde-dim:#E7F1E5;
   --naranja:#8A6B4A; --azul:#5A6B7C; --azul-dim:#E9ECEF;
@@ -44,19 +44,19 @@
   --e2:#E06400; --e2-suave:#FCEDDE; --e2-borde:#EFAC70;
   --e3:#C22C8C; --e3-suave:#F8E5F1; --e3-borde:#DE8FC3;
   --e4:#3E8E3F; --e4-suave:#E7F1E5; --e4-borde:#93C292;
-  --ambar:#F7A82B; --ambar-hondo:#B96E00;
+  --ambar:#FEBA17; --ambar-hondo:#8F6400;
   --urgente:#C0392B; --urgente-suave:#F9E5E1;
 
   --slab:"Alfa Slab One","Baloo 2",serif;
   --font:"Baloo 2",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  --sombra:4px 4px 0 rgba(43,38,32,.13);
-  --sombra-ch:3px 3px 0 rgba(43,38,32,.13);
+  --sombra:4px 4px 0 rgba(78,31,0,.13);
+  --sombra-ch:3px 3px 0 rgba(78,31,0,.13);
   --topH:104px;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--crema);color:var(--cafe);font-family:var(--font);font-size:15.5px;line-height:1.35;
-  background-image:radial-gradient(rgba(43,38,32,.05) 1.2px,transparent 1.3px);background-size:24px 24px}
+  background-image:radial-gradient(rgba(78,31,0,.05) 1.2px,transparent 1.3px);background-size:24px 24px}
 button{font-family:var(--font)}
 a{color:inherit;text-decoration:none}
 .oculto{display:none!important}
@@ -435,6 +435,96 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
 .codigoCopia{background:var(--cafe);color:var(--yema);border-radius:12px;padding:11px 13px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;margin-top:11px;max-height:88px;overflow:auto}
 .btnAjustes{position:fixed;right:14px;bottom:14px;width:52px;height:52px;border-radius:50%;background:var(--blanco);border:3px solid var(--cafe);box-shadow:var(--sombra-ch);font-size:22px;cursor:pointer;z-index:40;display:grid;place-items:center}
 .btnAjustes:active{transform:translate(3px,3px);box-shadow:none}
+
+/* ================= OPERACIÓN (⚙️) ================= */
+.opFila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:2px dashed var(--durazno);flex-wrap:wrap}
+.opFila:last-child{border-bottom:none}
+.opEtiq{font-weight:800;font-size:14.5px}
+.opBotones{display:flex;gap:8px}
+.opTv.activo,.opVoz.activo{background:var(--ambar);border-color:var(--cafe)}
+
+/* ================= CANTO DE TURNO ================= */
+.canto{position:fixed;inset:0;z-index:120;display:grid;place-items:center;background:rgba(78,31,0,.86);animation:cantoIn .25s ease}
+@keyframes cantoIn{from{opacity:0}to{opacity:1}}
+.canto .cTarjeta{text-align:center;color:var(--crema)}
+.canto .cTurno{font-family:var(--slab);font-size:clamp(90px,22vw,260px);line-height:1;color:var(--ambar)}
+.canto .cNombre{font-size:clamp(24px,4vw,54px);font-weight:800;margin-top:8px}
+.canto .cListo{display:inline-flex;align-items:center;gap:12px;margin-top:18px;background:var(--e3);color:#fff;border-radius:999px;padding:10px 26px;font-weight:800;font-size:clamp(16px,2.4vw,30px)}
+
+/* ================= TV · LA CINTA ================= */
+.cinta{position:relative;margin-top:14px;border:2.5px solid var(--salvia);border-radius:18px;background:var(--blanco);padding:18px 0 10px;overflow:hidden}
+.cintaZona{position:absolute;top:0;bottom:0;right:0;background:var(--urgente-suave)}
+.cintaMeta{position:absolute;top:0;bottom:0;width:4px;background:var(--urgente);border-radius:2px}
+.cintaMeta .cintaEtiq{position:absolute;top:4px;left:8px;font-weight:800;font-size:12px;color:var(--urgente);white-space:nowrap}
+.cintaFila{position:relative;height:86px;margin:8px 12px}
+.cintaPed{position:absolute;top:0;min-width:190px;max-width:300px;background:var(--blanco);border:3px solid var(--cafe);border-radius:14px;box-shadow:var(--sombra-ch);padding:8px 10px;transition:left .8s linear}
+.cintaPed .cpTop{display:flex;align-items:center;gap:8px}
+.cintaPed .folio{width:34px;height:34px;font-size:14px}
+.cintaPed b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.cintaPed .cpMin{font-family:var(--slab);font-size:15px;margin-left:auto}
+.cintaPed .cpPictos{display:flex;gap:4px;margin-top:4px;align-items:center}
+.cintaPed.tarde{border-color:var(--urgente);background:var(--urgente-suave)}
+.cintaPed[data-e="proceso"]{border-color:var(--e2)}
+.cintaPed[data-e="terminado"]{border-color:var(--e3)}
+.cintaVacia{text-align:center;color:var(--cafe-suave);font-weight:700;padding:44px 10px}
+@media(min-width:1500px){
+  .cintaFila{height:112px}
+  .cintaPed{min-width:250px;padding:10px 12px}
+  .cintaPed b{font-size:19px;max-width:190px}
+  .cintaPed .cpMin{font-size:21px}
+  .cintaMeta .cintaEtiq{font-size:16px}
+}
+
+/* ================= DETALLE / LÍNEA DE TIEMPO ================= */
+.pedInfo{cursor:pointer}
+.detCaja{max-width:640px;margin:14px auto 0}
+.lineaT{margin:14px 0 4px;padding-left:6px}
+.ltPaso{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:18px}
+.ltPaso:before{content:'';position:absolute;left:17px;top:36px;bottom:0;width:3px;background:var(--salvia)}
+.ltPaso:last-child:before{display:none}
+.ltPaso .pasoP{position:relative;z-index:1}
+.ltTxt b{display:block;font-size:15px}
+.ltTxt small{color:var(--cafe-2);font-weight:700}
+.ltPend .ltTxt b,.ltPend .ltTxt small{color:var(--gris)}
+.detBtns{display:flex;gap:10px;margin-top:14px}
+.detBtns .btnPie{flex:1}
+
+/* ================= HISTORIAL ================= */
+.histBarra{display:flex;gap:8px;margin:14px 0 6px;flex-wrap:wrap}
+.histBarra input{flex:1;min-width:180px}
+.filtros{display:flex;gap:7px;flex-wrap:wrap;margin:6px 0 10px}
+.filtro{border:2.5px solid var(--salvia);background:var(--blanco);border-radius:999px;padding:6px 14px;font-weight:800;font-size:12.5px;cursor:pointer;color:var(--cafe-2);display:flex;align-items:center;gap:6px}
+.filtro.activo{border-color:var(--cafe);background:var(--arena);color:var(--cafe)}
+.histDia{margin:16px 0 4px;font-weight:800;color:var(--cafe-2);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+.histFila{display:flex;align-items:center;gap:10px;background:var(--blanco);border:2.5px solid var(--salvia);border-radius:13px;padding:9px 12px;margin-top:8px;cursor:pointer}
+.histFila .folio{width:38px;height:38px;font-size:14px}
+.histFila .hInfo{flex:1;min-width:0}
+.histFila .hInfo b{display:block;font-size:15px}
+.histFila .hInfo small{color:var(--cafe-2);font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.histFila .hMin{font-family:var(--slab);font-size:15px;white-space:nowrap}
+.histFila .pasoP{width:30px;height:30px;flex:none}
+
+/* ================= MÉTRICAS ================= */
+.metGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+@media(max-width:700px){.metGrid{grid-template-columns:repeat(2,1fr)}}
+.graf{background:var(--blanco);border:2.5px solid var(--salvia);border-radius:16px;padding:14px;margin-top:14px}
+.graf h3{margin:0 0 10px;font-size:13px;color:var(--cafe-2);letter-spacing:.06em;text-transform:uppercase}
+.barra{display:flex;align-items:center;gap:10px;margin:7px 0}
+.barra .bEtiq{width:74px;font-weight:800;font-size:12.5px;color:var(--cafe-2);text-align:right}
+.barra .bPista{flex:1;background:var(--durazno);border-radius:8px;height:26px;position:relative}
+.barra .bRelleno{position:absolute;left:0;top:0;bottom:0;background:var(--ambar);border-radius:8px;border:2px solid var(--cafe)}
+.barra .bVal{font-family:var(--slab);font-size:14px;min-width:34px}
+
+/* ================= VISTA DEL CLIENTE ================= */
+.cliCaja{max-width:560px;margin:0 auto;text-align:center;padding-top:10px}
+.cliLugar{font-weight:800;color:var(--cafe-2);font-size:15px}
+.cliTurno{font-family:var(--slab);font-size:clamp(80px,24vw,150px);line-height:1;color:var(--cafe)}
+.cliMsj{display:inline-block;border-radius:999px;padding:12px 26px;font-weight:800;font-size:clamp(17px,3vw,23px);margin:10px 0 4px;border:3px solid}
+.cliMsj[data-e="solicitado"]{background:var(--e1-suave);border-color:var(--e1);color:var(--e1)}
+.cliMsj[data-e="proceso"]{background:var(--e2-suave);border-color:var(--e2);color:var(--e2)}
+.cliMsj[data-e="terminado"]{background:var(--e3-suave);border-color:var(--e3);color:var(--e3)}
+.cliMsj[data-e="entregado"]{background:var(--e4-suave);border-color:var(--e4);color:var(--e4)}
+
 /* ═══════════ TEMA HUESO · capa final ═══════════ */
 .heroCafe{background:var(--cafe)}
 .marca{color:var(--ambar)}
@@ -554,6 +644,23 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
     <div class="cnxCaja">
 
       <div class="cnxBloque">
+        <h3>🍳 La operación</h3>
+        <p class="ex">Estos ajustes no necesitan código. La meta se comparte con todos los aparatos; la vista de TV y la voz son de este aparato.</p>
+        <div class="opFila"><span class="opEtiq">⏱ Meta por pedido (minutos)</span>
+          <span class="step"><button id="metaMenos" aria-label="menos">−</button><b id="metaValor">10</b><button id="metaMas" aria-label="más">+</button></span></div>
+        <div class="opFila"><span class="opEtiq">📺 Vista de la TV</span>
+          <span class="opBotones">
+            <button class="chipVolver opTv" data-tv="renglones" id="tvRenglones">Renglones</button>
+            <button class="chipVolver opTv" data-tv="cinta" id="tvCinta">La cinta</button>
+          </span></div>
+        <div class="opFila"><span class="opEtiq">🔊 Canto de turno con voz</span>
+          <span class="opBotones">
+            <button class="chipVolver opVoz" data-voz="si" id="vozSi">Encendida</button>
+            <button class="chipVolver opVoz" data-voz="no" id="vozNo">Apagada</button>
+          </span></div>
+      </div>
+
+      <div class="cnxBloque">
         <h3>📋 Copiar a otra tableta <span class="luz off" id="luzCodigo">—</span></h3>
         <p class="ex">Lo más fácil: genera una <b>liga mágica</b>, mándatela por WhatsApp y ábrela en las otras tabletas — se configuran solas, sin copiar ni pegar nada.</p>
         <div class="cnxBtns">
@@ -627,6 +734,10 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
       <a class="cardRuta hoverable" href="#pedidos"><span class="icono">🧾</span><span class="pill">Pedidos</span><span class="mini">Tableta del mostrador</span></a>
       <a class="cardRuta hoverable" href="#dashboard"><span class="icono">📊</span><span class="pill">Dashboard</span><span class="mini">Tableta de la nave · TV</span></a>
     </div>
+    <div class="menuGrid" style="margin-top:18px">
+      <a class="cardRuta hoverable" href="#historial" style="min-height:120px;padding:20px 14px"><span class="icono" style="font-size:34px">🔎</span><span class="pill" style="font-size:17px;padding:5px 20px">Historial</span></a>
+      <a class="cardRuta hoverable" href="#metricas" style="min-height:120px;padding:20px 14px"><span class="icono" style="font-size:34px">📈</span><span class="pill" style="font-size:17px;padding:5px 20px">Métricas</span></a>
+    </div>
   </div>
   <footer class="lema">🥚 ¡Calidad y frescura todos los días! 🥚</footer>
 </section>
@@ -691,6 +802,22 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
     </section>
   </main>
 
+  <main id="vDetalle" class="vista oculto"><div class="detCaja" id="detCaja"></div></main>
+
+  <main id="vHistorial" class="vista oculto">
+    <div class="histBarra"><input id="histBusca" placeholder="🔎 Buscar por folio o cliente" autocomplete="off"></div>
+    <div class="filtros" id="histFiltros"></div>
+    <div id="histLista"></div>
+  </main>
+
+  <main id="vMetricas" class="vista oculto">
+    <div class="metGrid" id="metKpis"></div>
+    <div class="graf"><h3>⏱ Duración promedio por etapa (min)</h3><div id="metEtapas"></div></div>
+    <div class="graf"><h3>📩 Ritmo del día · pedidos por hora</h3><div id="metRitmo"></div></div>
+  </main>
+
+  <main id="vSeguir" class="vista oculto"><div class="cliCaja" id="cliCaja"></div></main>
+
   <main id="vDashboard" class="vista ancha oculto">
     <div class="resumen4" id="kpiRow"></div>
     <div class="listaT" id="tablero"></div>
@@ -718,6 +845,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
   </div>
 </div>
 
+<div id="canto" class="canto oculto"></div>
 <div id="nubeChip" class="nubeChip oculto"></div>
 <div id="toast" class="toast oculto"></div>
 
@@ -725,7 +853,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
 'use strict';
 
 /* ══════ PICTOGRAMAS (dibujos provisionales) ══════ */
-const TRAZO = '#2B2620';
+const TRAZO = '#4E1F00';
 
 /* ---------- PRODUCTOS ---------- */
 const DIBUJO_PRODUCTO = {
@@ -921,7 +1049,12 @@ const CATS = {
   azucar: { ic: '🍬', t: 'Azúcar' },  frijol: { ic: '🫘', t: 'Frijol' },
   arroz:  { ic: '🍚', t: 'Arroz' },
 };
-const META_MIN = 10;
+/* Meta de minutos: compartida entre aparatos (db.ajustes viaja por la nube).
+   Voz y vista de TV son por aparato (viven en CFG). */
+const META_DEF = 10;
+const metaMin = () => Math.max(1, Number(db.ajustes && db.ajustes.metaMin) || META_DEF);
+const vozActiva = () => CFG.voz !== false;
+const vistaTV = () => (CFG.vistaTV === 'cinta' ? 'cinta' : 'renglones');
 
 /* ───── Catálogo de Casa Muñoz ───── */
 /* Dibujo por defecto de cada categoría (se puede cambiar producto por producto) */
@@ -952,10 +1085,11 @@ let MEM = null;
 function leerLS() { try { const r = localStorage.getItem(K); return r ? JSON.parse(r) : null; } catch (e) { return MEM; } }
 function escribirLS() { try { localStorage.setItem(K, JSON.stringify(db)); } catch (e) { MEM = db; } }
 
-let db = leerLS() || { productos: SEED, pedidos: [], cortes: [], updatedAt: 0 };
+let db = leerLS() || { productos: SEED, pedidos: [], cortes: [], ajustes: { metaMin: META_DEF }, updatedAt: 0 };
 if (!Array.isArray(db.productos)) db.productos = SEED;
 if (!Array.isArray(db.pedidos)) db.pedidos = [];
 if (!Array.isArray(db.cortes)) db.cortes = [];
+if (!db.ajustes || typeof db.ajustes !== 'object') db.ajustes = { metaMin: META_DEF };
 
 let draft = {};
 let catActiva = 'huevo';
@@ -1008,7 +1142,13 @@ try { bc = new BroadcastChannel('casa-munoz-gestor'); bc.onmessage = recibirCamb
 window.addEventListener('storage', e => { if (e.key === K) recibirCambio(); });
 function recibirCambio() {
   const nuevo = leerLS();
-  if (nuevo && (nuevo.updatedAt || 0) > (db.updatedAt || 0)) { db = nuevo; renderRuta(); }
+  if (nuevo && (nuevo.updatedAt || 0) > (db.updatedAt || 0)) {
+    const antes = {};
+    (db.pedidos || []).forEach(p => { antes[p.id] = p.estado; });
+    db = nuevo; renderRuta();
+    for (const p of db.pedidos || [])
+      if (p.estado === 'terminado' && antes[p.id] && antes[p.id] !== 'terminado') cantarTurno(p);
+  }
 }
 let nubeEscribir = null, nubeProbar = null, ultimaNube = 0;
 let nubeEstado = FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey ? 'conectando' : 'apagada';
@@ -1045,10 +1185,13 @@ function nubeGuardar(ruta, valor) {
 const nubePedido    = p => nubeGuardar('pedidos/' + p.id, p);
 const nubeCorte     = c => nubeGuardar('cortes/' + c.id, c);
 const nubeProductos = () => nubeGuardar('productos', aMapa(db.productos));
+const nubeAjustes   = () => nubeGuardar('ajustes', db.ajustes);
 
 /* Fusión: pedidos y cortes se unen (nunca se borran); el catálogo de
    productos sí manda desde la nube, para que un borrado se propague. */
 function fusionarNube(remoto, primeraVez) {
+  const antes = {};
+  (db.pedidos || []).forEach(p => { antes[p.id] = p.estado; });
   let cambio = false;
   const subir = [];
   for (const campo of ['cortes', 'pedidos']) {
@@ -1064,6 +1207,12 @@ function fusionarNube(remoto, primeraVez) {
     if (lista.length !== (db[campo] || []).length) cambio = true;
     db[campo] = lista;
   }
+  const remAj = remoto && remoto.ajustes;
+  if (remAj && typeof remAj === 'object') {
+    if (JSON.stringify(remAj) !== JSON.stringify(db.ajustes)) { db.ajustes = remAj; cambio = true; }
+  } else if (primeraVez && db.ajustes) {
+    subir.push(['ajustes', db.ajustes]);
+  }
   const remProd = remoto && remoto.productos;
   if (remProd && Object.keys(remProd).length) {
     const lista = aLista(remProd);
@@ -1072,7 +1221,33 @@ function fusionarNube(remoto, primeraVez) {
     subir.push(['productos', aMapa(db.productos)]);
   }
   if (cambio) { escribirLS(); renderRuta(); }
+  if (!primeraVez) {
+    for (const p of db.pedidos || [])
+      if (p.estado === 'terminado' && antes[p.id] && antes[p.id] !== 'terminado') cantarTurno(p);
+  }
   return subir;
+}
+
+/* ══════ Canto de turno: banda gigante 3 s + voz (solo en la TV/dashboard) ══════ */
+let cantoT = null;
+function cantarTurno(p) {
+  if (location.hash !== '#dashboard') return;
+  const c = $('#canto');
+  c.innerHTML = `<div class="cTarjeta">
+    <div class="cTurno">${p.folio}</div>
+    <div class="cNombre">${esc(p.cliente)}</div>
+    <div class="cListo">${pictoEstado('terminado', 34)} ¡Listo para entregar!</div></div>`;
+  c.classList.remove('oculto');
+  clearTimeout(cantoT);
+  cantoT = setTimeout(() => c.classList.add('oculto'), 3000);
+  if (vozActiva() && 'speechSynthesis' in window) {
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance('Turno ' + p.folio + '. Pedido de ' + p.cliente + ', listo para entregar.');
+      u.lang = 'es-MX'; u.rate = 0.95;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
 }
 
 async function initNube() {
@@ -1163,7 +1338,7 @@ const filaPedido = p => ({
 });
 
 /* ───── Router ───── */
-const RUTAS_APP = ['#pedidos', '#nuevo', '#dashboard'];
+const RUTAS_APP = ['#pedidos', '#nuevo', '#dashboard', '#historial', '#metricas', '#detalle', '#seguir'];
 
 /* Mientras el día siga abierto, abrir la app en CUALQUIER aparato entra
    directo — a la pantalla que ese aparato usa (mostrador o dashboard).
@@ -1201,13 +1376,18 @@ function renderRuta() {
   $('#chipDiaApp').textContent = corte ? `📅 ${hhmm(corte.inicio)}` : '';
   if (h === '#menu') return;
 
-  $('#vPedidos').classList.toggle('oculto', h !== '#pedidos');
-  $('#vNuevo').classList.toggle('oculto', h !== '#nuevo');
-  $('#vDashboard').classList.toggle('oculto', h !== '#dashboard');
-  $('#tituloVista').textContent = h === '#pedidos' ? '🧾 Pedidos' : (h === '#nuevo' ? '➕ Nuevo pedido' : '📊 Dashboard');
+  for (const [sel, ruta] of [['#vPedidos', '#pedidos'], ['#vNuevo', '#nuevo'], ['#vDashboard', '#dashboard'],
+    ['#vDetalle', '#detalle'], ['#vHistorial', '#historial'], ['#vMetricas', '#metricas'], ['#vSeguir', '#seguir']])
+    $(sel).classList.toggle('oculto', h !== ruta);
+  $('#tituloVista').textContent = ({ '#pedidos': '🧾 Pedidos', '#nuevo': '➕ Nuevo pedido', '#dashboard': '📊 Dashboard',
+    '#detalle': '🧾 Detalle', '#historial': '🔎 Historial', '#metricas': '📈 Métricas', '#seguir': '📱 Tu pedido' })[h] || '';
   if (h === '#pedidos') renderPedidos();
   if (h === '#nuevo') { if (cartCount() === 0) paso = 1; renderNuevo(); }
   if (h === '#dashboard') renderDashboard();
+  if (h === '#detalle') renderDetalle();
+  if (h === '#historial') renderHistorial();
+  if (h === '#metricas') renderMetricas();
+  if (h === '#seguir') renderSeguir();
 }
 window.addEventListener('hashchange', () => { autoEntrada = false; renderRuta(); window.scrollTo(0, 0); });
 
@@ -1277,7 +1457,17 @@ function parseFirebase(txt) {
 
 function renderAjustesSiVisible() { if (location.hash === '#ajustes') renderAjustes(); }
 
+function pintarOperacion() {
+  $('#metaValor').textContent = metaMin();
+  const tv = vistaTV(), voz = vozActiva();
+  $('#tvRenglones').classList.toggle('activo', tv === 'renglones');
+  $('#tvCinta').classList.toggle('activo', tv === 'cinta');
+  $('#vozSi').classList.toggle('activo', voz);
+  $('#vozNo').classList.toggle('activo', !voz);
+}
+
 function renderAjustes() {
+  pintarOperacion();
   const c = leerCfg();
   const nube = !!(c.firebase && c.firebase.apiKey);
   const excel = !!c.sheets;
@@ -1468,6 +1658,7 @@ function cambiarEstado(id, est) {
   p.estado = est;
   p.ts = p.ts || {};
   p.ts[est] = ahora;
+  if (est === 'terminado') setTimeout(() => cantarTurno(p), 50);
   if (est === 'entregado') {
     p.entregadoTs = ahora;
     p.minutosTotal = Math.max(0, Math.round((ahora - p.creado) / 60000));
@@ -1580,8 +1771,8 @@ function guardarPedido() {
 function relojAnillo(min, listo) {
   const grande = window.innerWidth >= 1500;
   const R = grande ? 34 : 25, gr = grande ? 8 : 6, C = 2 * Math.PI * R;
-  const frac = Math.max(0.06, Math.min(1, min / META_MIN));  // siempre se ve algo de arco
-  const tarde = !listo && min >= META_MIN;
+  const frac = Math.max(0.06, Math.min(1, min / metaMin()));  // siempre se ve algo de arco
+  const tarde = !listo && min >= metaMin();
   const color = listo ? 'var(--e4)' : (tarde ? 'var(--urgente)' : (frac > 0.6 ? 'var(--e2)' : 'var(--e4)'));
   const lado = (R + gr) * 2;
   return `<div class="reloj ${tarde ? 'tarde' : ''}">
@@ -1615,7 +1806,7 @@ function renglonTablero(p, n, saliendo) {
   const sig = ESTADOS[ESTADOS.indexOf(p.estado) + 1];
   const listo = p.estado === 'entregado';
   const min = listo ? (p.minutosTotal || 0) : minutos(p.creado);
-  const tarde = !listo && min >= META_MIN;
+  const tarde = !listo && min >= metaMin();
   return `<div class="filaP ${saliendo ? 'saliendo' : ''} ${tarde ? 'tarde' : ''}" data-e="${p.estado}">
     <div class="filaNum">${n}</div>
     <div class="medio">
@@ -1634,13 +1825,34 @@ function renglonTablero(p, n, saliendo) {
   </div>`;
 }
 
+function renderCinta(peds) {
+  const ahora = Date.now();
+  const activos = peds.filter(p => p.estado !== 'entregado');
+  const META_X = 72;             // la meta vive al 72% del ancho; después empieza la zona roja
+  let html = `<div class="cintaZona" style="left:${META_X}%"></div>
+    <div class="cintaMeta" style="left:${META_X}%"><span class="cintaEtiq">⏱ meta ${metaMin()} min</span></div>`;
+  html += activos.map(p => {
+    const min = minutos(p.creado);
+    const frac = Math.min(1.3, min / metaMin());
+    const x = Math.min(76, 2 + frac * (META_X - 2));   // avanza hacia la meta; si se pasa, entra a la zona roja
+    const tarde = min >= metaMin();
+    return `<div class="cintaFila"><div class="cintaPed ${tarde ? 'tarde' : ''}" data-e="${p.estado}" style="left:${x.toFixed(1)}%">
+      <div class="cpTop"><div class="folio">${p.folio}</div><b>${esc(p.cliente)}</b><span class="cpMin">${min}'</span></div>
+      <div class="cpPictos">${p.items.slice(0, 4).map(i => pictoProducto(picDe(i), 22)).join('')}${p.items.length > 4 ? '…' : ''}
+        ${pictoEstado(p.estado, 18)}</div>
+    </div></div>`;
+  }).join('');
+  if (!activos.length) html += '<div class="cintaVacia">🧺 Sin pedidos en la fila</div>';
+  $('#tablero').innerHTML = `<div class="cinta">${html}</div>`;
+}
+
 function renderDashboard() {
   const corte = corteAbierto();
   const peds = pedidosDelCorte(corte);
   const ahora = Date.now();
   const entregados = peds.filter(p => p.estado === 'entregado');
   const enFila = peds.filter(p => p.estado !== 'entregado');
-  const tarde = enFila.filter(p => minutos(p.creado) >= META_MIN).length;
+  const tarde = enFila.filter(p => minutos(p.creado) >= metaMin()).length;
   const prom = entregados.length ? Math.round(entregados.reduce((s, p) => s + (p.minutosTotal || 0), 0) / entregados.length) : 0;
 
   /* Arriba: los 4 estados con su dibujo y su número — es todo lo que hay que leer. */
@@ -1657,9 +1869,13 @@ function renderDashboard() {
   const filas = peds.filter(p => p.estado !== 'entregado' || (p.entregadoTs && ahora - p.entregadoTs < 3000));
   const hayTransito = filas.some(p => p.estado === 'entregado');
 
-  $('#tablero').innerHTML = filas.length
-    ? filas.map((p, i) => renglonTablero(p, i + 1, p.estado === 'entregado')).join('')
-    : `<div class="tableroVacio">🧺 Sin pedidos en la fila${peds.length ? ' · ¡todo entregado!' : ''}</div>`;
+  if (vistaTV() === 'cinta') {
+    renderCinta(peds);
+  } else {
+    $('#tablero').innerHTML = filas.length
+      ? filas.map((p, i) => renglonTablero(p, i + 1, p.estado === 'entregado')).join('')
+      : `<div class="tableroVacio">🧺 Sin pedidos en la fila${peds.length ? ' · ¡todo entregado!' : ''}</div>`;
+  }
 
   clearTimeout(timerSalida);
   if (hayTransito) timerSalida = setTimeout(renderRuta, 3200);
@@ -1683,6 +1899,129 @@ function descargarExcel() {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   toast('⬇️ Excel del día descargado');
+}
+
+/* ───── Detalle del pedido: línea de tiempo ───── */
+let detalleId = null, seguirId = null, histFiltro = 'todos';
+const buscaPedido = id => db.pedidos.find(x => x.id === id);
+const MSJ_CLI = { solicitado: 'Recibimos tu pedido', proceso: 'Lo estamos preparando',
+                  terminado: '¡Ya está listo! Pasa a recogerlo', entregado: 'Entregado · ¡gracias!' };
+
+function lineaTiempo(p) {
+  const orden = ESTADOS;
+  const idx = orden.indexOf(p.estado);
+  return `<div class="lineaT">` + orden.map((e, i) => {
+    const t = p.ts && p.ts[e];
+    const prevT = i > 0 ? (p.ts && p.ts[orden[i - 1]]) : null;
+    const dur = t && prevT ? Math.max(0, Math.round((t - prevT) / 60000)) : null;
+    const hecho = i < idx, actual = i === idx;
+    return `<div class="ltPaso ${!t && !actual ? 'ltPend' : ''}">
+      <span class="pasoP ${hecho ? 'hecho' : ''} ${actual ? 'actual' : ''}" data-e="${e}">${pictoEstado(e, actual ? 26 : 18)}</span>
+      <span class="ltTxt"><b>${ETIQ[e]}</b>
+        <small>${t ? hhmm(t) + (dur != null && i > 0 ? ' · +' + durTxt(dur) : '') : 'pendiente'}</small></span>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function renderDetalle() {
+  const p = buscaPedido(detalleId);
+  const caja = $('#detCaja');
+  if (!p) { caja.innerHTML = '<div class="vacio"><div class="ico">🧾</div><h3>Ese pedido ya no está</h3></div>'; return; }
+  const total = p.items.reduce((s2, i) => s2 + (i.precio || 0) * i.cant, 0);
+  caja.innerHTML = `
+    <div class="filaP" data-e="${p.estado}" style="cursor:default">
+      <div class="filaNum">${p.folio}</div>
+      <div class="medio">
+        <div class="cabP"><b>${esc(p.cliente)}</b></div>
+        <div class="fichas">${p.items.map(fichaItem).join('')}</div>
+        ${p.nota ? `<span class="notaPed">📝 ${esc(p.nota)}</span>` : ''}
+        ${total > 0 ? `<div class="totalRow" style="max-width:260px"><span>Total</span><strong>${money(total)}</strong></div>` : ''}
+      </div>
+    </div>
+    ${lineaTiempo(p)}
+    <div class="detBtns">
+      <button class="btnPie hoverable" id="btnVerCliente">📱 Vista para el cliente</button>
+      <button class="btnPie hoverable" id="btnVolverDet">← Regresar</button>
+    </div>`;
+  $('#btnVerCliente').onclick = () => { seguirId = p.id; location.hash = '#seguir'; };
+  $('#btnVolverDet').onclick = () => history.back();
+}
+
+/* ───── Historial con búsqueda y filtros ───── */
+function renderHistorial() {
+  const filtros = [['todos', '📋 Todos'], ...ESTADOS.map(e => [e, `${ICONO[e]} ${ETIQ[e]}`])];
+  $('#histFiltros').innerHTML = filtros.map(([v, t]) =>
+    `<button class="filtro ${histFiltro === v ? 'activo' : ''}" data-f="${v}">${t}</button>`).join('');
+  const q = ($('#histBusca').value || '').trim().toLowerCase();
+  let lista = db.pedidos.slice().sort((a, b) => b.creado - a.creado);
+  if (histFiltro !== 'todos') lista = lista.filter(p => p.estado === histFiltro);
+  if (q) lista = lista.filter(p => String(p.folio) === q || p.cliente.toLowerCase().includes(q));
+  lista = lista.slice(0, 120);
+  let html = '', diaPrev = '';
+  for (const p of lista) {
+    const dia = fechaISO(p.creado);
+    if (dia !== diaPrev) { html += `<div class="histDia">${fechaLarga(p.creado)}</div>`; diaPrev = dia; }
+    html += `<div class="histFila" data-det="${p.id}">
+      <div class="folio">${p.folio}</div>
+      <div class="hInfo"><b>${esc(p.cliente)}</b>
+        <small>${hhmm(p.creado)} · ${p.items.map(i => i.cant + '× ' + i.nombre).join(' · ')}</small></div>
+      ${p.minutosTotal != null ? `<span class="hMin">${durTxt(p.minutosTotal)}</span>` : ''}
+      <span class="pasoP actual" data-e="${p.estado}">${pictoEstado(p.estado, 18)}</span>
+    </div>`;
+  }
+  $('#histLista').innerHTML = html || '<div class="vacio"><div class="ico">🔎</div><h3>Nada por aquí</h3><p>Prueba con otro nombre o folio.</p></div>';
+}
+
+/* ───── Métricas del día ───── */
+function barras(cont, datos, unidad) {
+  const max = Math.max(1, ...datos.map(d => d.v));
+  cont.innerHTML = datos.map(d => `<div class="barra">
+    <span class="bEtiq">${d.t}</span>
+    <span class="bPista"><span class="bRelleno" style="width:${Math.round(d.v / max * 100)}%"></span></span>
+    <span class="bVal">${d.v}${unidad}</span></div>`).join('');
+}
+
+function renderMetricas() {
+  const c = corteAbierto();
+  const peds = pedidosDelCorte(c);
+  const ent = peds.filter(p => p.estado === 'entregado' && p.minutosTotal != null);
+  const tiempos = ent.map(p => p.minutosTotal);
+  const prom = tiempos.length ? Math.round(tiempos.reduce((a, b) => a + b, 0) / tiempos.length) : 0;
+  const aTiempo = ent.length ? Math.round(ent.filter(p => p.minutosTotal <= metaMin()).length / ent.length * 100) : 0;
+  $('#metKpis').innerHTML = [
+    { n: prom ? prom + "'" : '—', t: 'Promedio' },
+    { n: tiempos.length ? Math.min(...tiempos) + "'" : '—', t: 'Mejor tiempo' },
+    { n: tiempos.length ? Math.max(...tiempos) + "'" : '—', t: 'Peor tiempo' },
+    { n: ent.length ? aTiempo + '%' : '—', t: 'A tiempo (≤' + metaMin() + "')" },
+  ].map(k => `<div class="kpi"><div class="n">${k.n}</div><small>${k.t}</small></div>`).join('');
+
+  const etapas = [['Preparar', 'solicitado', 'proceso'], ['Armar', 'proceso', 'terminado'], ['Entregar', 'terminado', 'entregado']]
+    .map(([t, a, b]) => {
+      const durs = peds.filter(p => p.ts && p.ts[a] && p.ts[b]).map(p => Math.max(0, Math.round((p.ts[b] - p.ts[a]) / 60000)));
+      return { t, v: durs.length ? Math.round(durs.reduce((x, y) => x + y, 0) / durs.length) : 0 };
+    });
+  barras($('#metEtapas'), etapas, "'");
+
+  const horas = {};
+  peds.forEach(p => { const h = new Date(p.creado).getHours(); horas[h] = (horas[h] || 0) + 1; });
+  const hs = Object.keys(horas).map(Number).sort((a, b) => a - b);
+  barras($('#metRitmo'), hs.length ? hs.map(h => ({ t: h + ':00', v: horas[h] })) : [{ t: 'hoy', v: 0 }], '');
+}
+
+/* ───── Vista del cliente ───── */
+function renderSeguir() {
+  const p = buscaPedido(seguirId);
+  const caja = $('#cliCaja');
+  if (!p) { caja.innerHTML = '<div class="vacio"><div class="ico">📱</div><h3>Ese pedido ya no está</h3></div>'; return; }
+  const c = corteAbierto();
+  const activos = pedidosDelCorte(c).filter(x => x.estado !== 'entregado');
+  const lugar = activos.findIndex(x => x.id === p.id) + 1;
+  caja.innerHTML = `
+    ${p.estado !== 'entregado' && lugar > 0 ? `<div class="cliLugar">${lugar === 1 ? '¡Eres el siguiente!' : 'Hay ' + (lugar - 1) + ' pedido' + (lugar > 2 ? 's' : '') + ' antes del tuyo'}</div>` : ''}
+    <div class="cliTurno">${p.folio}</div>
+    <div class="cliMsj" data-e="${p.estado}">${pictoEstado(p.estado, 26)} ${MSJ_CLI[p.estado]}</div>
+    ${lineaTiempo(p)}
+    <div class="fichas" style="justify-content:center">${p.items.map(fichaItem).join('')}</div>`;
 }
 
 /* ───── Modal de productos ───── */
@@ -1756,6 +2095,55 @@ $('#btnVolver2').addEventListener('click', () => irPaso(2));
 $('#btnSigue1').addEventListener('click', () => irPaso(3));
 $('#btnSigue2').addEventListener('click', () => { if (cartCount()) irPaso(3); else toast('Toca al menos un producto'); });
 $('#btnGuardar').addEventListener('click', guardarPedido);
+
+/* Detalle: tocar la info del pedido (los chips siguen siendo suyos) */
+function escuchaDetalle(contId) {
+  $(contId).addEventListener('click', e => {
+    if (e.target.closest('.chipEst')) return;
+    const card = e.target.closest('.pedidoCard');
+    if (!card) return;
+    const chip = card.querySelector('.chipEst');
+    if (!chip) return;
+    detalleId = chip.dataset.id;
+    location.hash = '#detalle';
+  });
+}
+escuchaDetalle('#listaPedidos');
+escuchaDetalle('#listaEntregados');
+
+/* Historial */
+$('#histBusca').addEventListener('input', renderHistorial);
+$('#histFiltros').addEventListener('click', e => {
+  const b = e.target.closest('.filtro');
+  if (!b) return;
+  histFiltro = b.dataset.f;
+  renderHistorial();
+});
+$('#histLista').addEventListener('click', e => {
+  const f = e.target.closest('.histFila');
+  if (!f) return;
+  detalleId = f.dataset.det;
+  location.hash = '#detalle';
+});
+
+/* Operación (⚙️) */
+function cambiaMeta(delta) {
+  db.ajustes = db.ajustes || {};
+  db.ajustes.metaMin = Math.min(90, Math.max(1, metaMin() + delta));
+  persistir(); nubeAjustes(); pintarOperacion();
+  toast('⏱ Meta: ' + metaMin() + ' minutos');
+}
+$('#metaMas').addEventListener('click', () => cambiaMeta(1));
+$('#metaMenos').addEventListener('click', () => cambiaMeta(-1));
+document.querySelectorAll('.opTv').forEach(b => b.addEventListener('click', () => {
+  const c = leerCfg(); c.vistaTV = b.dataset.tv; guardarCfg(c); CFG.vistaTV = b.dataset.tv;
+  pintarOperacion(); toast('📺 Vista de TV: ' + (b.dataset.tv === 'cinta' ? 'La cinta' : 'Renglones'));
+}));
+document.querySelectorAll('.opVoz').forEach(b => b.addEventListener('click', () => {
+  const voz = b.dataset.voz === 'si';
+  const c = leerCfg(); c.voz = voz; guardarCfg(c); CFG.voz = voz;
+  pintarOperacion(); toast(voz ? '🔊 Voz encendida' : '🔇 Voz apagada');
+}));
 $('#btnAjustes').addEventListener('click', () => { location.hash = '#ajustes'; });
 $('#btnGuardarNube').addEventListener('click', guardarNube);
 $('#btnQuitarNube').addEventListener('click', quitarNube);
@@ -1802,7 +2190,7 @@ $('#listaProd').addEventListener('click', e => {
 /* Relojes vivos */
 setInterval(() => {
   const h = location.hash;
-  if (h === '#pedidos' || h === '#dashboard') renderRuta();
+  if (h === '#pedidos' || h === '#dashboard' || h === '#seguir' || h === '#detalle') renderRuta();
 }, 15000);
 
 /* ───── Arranque ───── */
