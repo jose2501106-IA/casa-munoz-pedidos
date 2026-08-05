@@ -552,6 +552,45 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
   .mitadP{font-size:20px;right:-9px}
 }
 
+/* ═══ Vista de TV: Columnas (kanban) ═══
+   Mismas 4 columnas que los encabezados de arriba: cada tarjeta vive
+   debajo de su estado y BRINCA de columna al avanzar. */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;padding-top:4px}
+.colK{display:flex;flex-direction:column;gap:14px;min-height:150px;border-radius:18px;padding:12px 10px;border:2.5px dashed transparent}
+.colK[data-e="solicitado"]{background:var(--e1-suave)}
+.colK[data-e="proceso"]{background:var(--e2-suave)}
+.colK[data-e="terminado"]{background:var(--e3-suave)}
+.colK[data-e="entregado"]{background:var(--e4-suave)}
+.cardK{position:relative;background:var(--blanco);border:3.5px solid var(--cafe);border-radius:18px;box-shadow:var(--sombra-ch);padding:12px 12px 10px}
+.cardK[data-e="solicitado"]{border-color:var(--e1)}
+.cardK[data-e="proceso"]{border-color:var(--e2)}
+.cardK[data-e="terminado"]{border-color:var(--e3);box-shadow:0 0 0 4px var(--e3-suave),var(--sombra-ch)}
+.cardK[data-e="entregado"]{border-color:var(--e4)}
+.ckTop{display:flex;align-items:center;gap:10px;min-width:0}
+.ckFolio{width:52px;height:52px;font-size:26px;flex:0 0 auto}
+.ckCli{font-size:20px;line-height:1.12;overflow-wrap:anywhere;min-width:0}
+.ckMin{margin-left:auto;font-family:var(--slab);font-size:25px;color:var(--cafe-2);flex:0 0 auto}
+.ckMin.rojo{color:var(--urgente)}
+.ckNota{margin-top:7px}
+.ckFichas{margin-top:11px;gap:9px}
+.ckFichas .ficha{width:clamp(96px,7vw,132px)}
+.cardK .btnSig{width:100%;margin-top:11px;justify-content:center}
+.cardK.tarde{border-color:var(--urgente);background:var(--urgente-suave)}
+.cardK.saliendo{animation:salir 3s forwards}
+@keyframes popK{0%{transform:scale(.9);opacity:.3}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.cardK.recien{animation:popK .5s ease-out}
+.colVacia{display:grid;place-items:center;opacity:.3;padding:30px 0 22px}
+@media(max-width:700px){.kanban{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1500px){
+  .kanban{gap:16px}
+  .ckFolio{width:66px;height:66px;font-size:33px}
+  .ckCli{font-size:27px}
+  .ckMin{font-size:33px}
+  .ckNota{font-size:18px}
+  .ckFichas .ficha{width:clamp(110px,6.5vw,150px)}
+  .cardK{padding:15px 15px 12px}
+}
+
 /* ═══════════ TEMA HUESO · capa final ═══════════ */
 .heroCafe{background:var(--cafe)}
 .marca{color:var(--ambar)}
@@ -677,6 +716,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{out
           <span class="step"><button id="metaMenos" aria-label="menos">−</button><b id="metaValor">10</b><button id="metaMas" aria-label="más">+</button></span></div>
         <div class="opFila"><span class="opEtiq">📺 Vista de la TV</span>
           <span class="opBotones">
+            <button class="chipVolver opTv" data-tv="columnas" id="tvColumnas">Columnas</button>
             <button class="chipVolver opTv" data-tv="renglones" id="tvRenglones">Renglones</button>
             <button class="chipVolver opTv" data-tv="cinta" id="tvCinta">La cinta</button>
           </span></div>
@@ -1081,7 +1121,9 @@ const CATS = {
 const META_DEF = 10;
 const metaMin = () => Math.max(1, Number(db.ajustes && db.ajustes.metaMin) || META_DEF);
 const vozActiva = () => CFG.voz !== false;
-const vistaTV = () => (CFG.vistaTV === 'cinta' ? 'cinta' : 'renglones');
+const VISTAS_TV = ['columnas', 'renglones', 'cinta'];
+const vistaTV = () => (VISTAS_TV.includes(CFG.vistaTV) ? CFG.vistaTV : 'columnas');
+const NOMBRE_TV = { columnas: 'Columnas', renglones: 'Renglones', cinta: 'La cinta' };
 
 /* ───── Catálogo de Casa Muñoz ───── */
 /* Dibujo por defecto de cada categoría (se puede cambiar producto por producto) */
@@ -1526,6 +1568,7 @@ function renderAjustesSiVisible() { if (location.hash === '#ajustes') renderAjus
 function pintarOperacion() {
   $('#metaValor').textContent = metaMin();
   const tv = vistaTV(), voz = vozActiva();
+  $('#tvColumnas').classList.toggle('activo', tv === 'columnas');
   $('#tvRenglones').classList.toggle('activo', tv === 'renglones');
   $('#tvCinta').classList.toggle('activo', tv === 'cinta');
   $('#vozSi').classList.toggle('activo', voz);
@@ -1906,6 +1949,40 @@ function renglonTablero(p, n, saliendo) {
   </div>`;
 }
 
+/* ───── Vista de TV: Columnas (kanban) ─────
+   Cada estado es una columna; el pedido BRINCA de columna al cambiar de estado.
+   Tarjetas grandes para leerse desde lejos: folio y minutos enormes, fotos reales.
+   El más viejo hasta arriba; el entregado se despide 3 segundos y se va. */
+let popHechos = {};   // cada brinco de columna anima UNA vez (id → estado ya animado)
+function cardKanban(p) {
+  const listo = p.estado === 'entregado';
+  const min = listo ? (p.minutosTotal || 0) : minutos(p.creado);
+  const tarde = !listo && p.estado !== 'terminado' && min >= metaMin();
+  const sig = ESTADOS[ESTADOS.indexOf(p.estado) + 1];
+  const recien = p.ts && p.ts[p.estado] && (Date.now() - p.ts[p.estado] < 1500) && popHechos[p.id] !== p.estado;
+  if (recien) popHechos[p.id] = p.estado;
+  return `<div class="cardK ${tarde ? 'tarde' : ''} ${listo ? 'saliendo' : ''} ${recien ? 'recien' : ''}" data-e="${p.estado}">
+    <div class="ckTop"><span class="folio ckFolio">${p.folio}</span>
+      <b class="ckCli">${esc(p.cliente)}</b>
+      <span class="ckMin ${tarde ? 'rojo' : ''}">${min}'</span></div>
+    ${p.nota ? `<div class="notaPed ckNota">📝 ${esc(p.nota)}</div>` : ''}
+    <div class="fichas ckFichas">${p.items.map(fichaItem).join('')}</div>
+    ${sig && !listo ? `<button class="btnSig ckSig" data-sig="${p.id}" data-n="${sig}">
+        ${pictoEstado(sig, 26)}<span class="fl">→</span></button>` : ''}
+  </div>`;
+}
+
+function renderColumnas(peds) {
+  const ahora = Date.now();
+  $('#tablero').innerHTML = '<div class="kanban">' + ESTADOS.map(est => {
+    let lista = peds.filter(p => p.estado === est).sort((a, b) => a.creado - b.creado);
+    if (est === 'entregado') lista = lista.filter(p => p.entregadoTs && ahora - p.entregadoTs < 3000);
+    return `<div class="colK" data-e="${est}">
+      ${lista.map(cardKanban).join('') || `<div class="colVacia">${pictoEstado(est, 46)}</div>`}
+    </div>`;
+  }).join('') + '</div>';
+}
+
 function renderCinta(peds) {
   const ahora = Date.now();
   const activos = peds.filter(p => p.estado !== 'entregado');
@@ -1952,6 +2029,8 @@ function renderDashboard() {
 
   if (vistaTV() === 'cinta') {
     renderCinta(peds);
+  } else if (vistaTV() === 'columnas') {
+    renderColumnas(peds);
   } else {
     $('#tablero').innerHTML = filas.length
       ? filas.map((p, i) => renglonTablero(p, i + 1, p.estado === 'entregado')).join('')
@@ -2218,7 +2297,7 @@ $('#metaMas').addEventListener('click', () => cambiaMeta(1));
 $('#metaMenos').addEventListener('click', () => cambiaMeta(-1));
 document.querySelectorAll('.opTv').forEach(b => b.addEventListener('click', () => {
   const c = leerCfg(); c.vistaTV = b.dataset.tv; guardarCfg(c); CFG.vistaTV = b.dataset.tv;
-  pintarOperacion(); toast('📺 Vista de TV: ' + (b.dataset.tv === 'cinta' ? 'La cinta' : 'Renglones'));
+  pintarOperacion(); toast('📺 Vista de TV: ' + (NOMBRE_TV[b.dataset.tv] || b.dataset.tv));
 }));
 document.querySelectorAll('.opVoz').forEach(b => b.addEventListener('click', () => {
   const voz = b.dataset.voz === 'si';
