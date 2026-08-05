@@ -525,6 +525,33 @@ textarea:focus{outline:3px solid var(--azul);outline-offset:2px}
 .cliMsj[data-e="terminado"]{background:var(--e3-suave);border-color:var(--e3);color:var(--e3)}
 .cliMsj[data-e="entregado"]{background:var(--e4-suave);border-color:var(--e4);color:var(--e4)}
 
+/* ═══ Fotos reales de productos ═══
+   mix-blend-mode:multiply funde el papelito crema de cada ilustración
+   con el fondo de la tarjeta: parecen impresas, sin recortes bruscos. */
+.fotoMarco{position:relative;width:100%;height:84px;display:grid;place-items:center;margin-top:2px}
+.ficha .fotoP{max-width:94%;max-height:84px;object-fit:contain;mix-blend-mode:multiply}
+.ficha.conFoto .picsAlt{display:none}
+.ficha:not(.conFoto) .fotoMarco{display:none}
+.picsAlt{display:flex;flex-direction:column;align-items:center;gap:3px}
+.mitadP{position:absolute;right:-8px;bottom:-6px;background:var(--yema);color:var(--cafe);font-family:var(--slab);font-size:16px;border:2.5px solid var(--cafe);border-radius:999px;padding:1px 8px;line-height:1.25}
+.miniPic{position:absolute;left:-7px;bottom:-6px;background:var(--blanco);border:2px solid var(--cafe);border-radius:999px;width:26px;height:26px;display:grid;place-items:center}
+.prodFoto{height:116px;display:grid;place-items:center;margin:0 0 10px}
+.prodFoto img{max-height:116px;max-width:86%;object-fit:contain;mix-blend-mode:multiply}
+.chipIco{display:inline-grid;place-items:center;width:34px;height:34px;flex:0 0 auto}
+.chipIco img{max-width:34px;max-height:34px;object-fit:contain;mix-blend-mode:multiply}
+.chipIco svg{display:none}
+.chipIco.fall img{display:none}
+.chipIco.fall svg{display:block}
+.lineaIco{width:38px;height:38px}
+.lineaIco img{max-width:38px;max-height:38px}
+.cFichas{justify-content:center;margin:10px 0 14px;gap:12px}
+.cFichas .ficha{background:#FFFDF4}
+@media(min-width:1500px){
+  .fotoMarco{height:106px}
+  .ficha .fotoP{max-height:106px}
+  .mitadP{font-size:20px;right:-9px}
+}
+
 /* ═══════════ TEMA HUESO · capa final ═══════════ */
 .heroCafe{background:var(--cafe)}
 .marca{color:var(--ambar)}
@@ -1062,6 +1089,44 @@ const PIC_CAT = { huevo: 'huevoBlanco', claras: 'claras', harina: 'harina',
                   leche: 'leche', azucar: 'azucar', frijol: 'frijol', arroz: 'arroz' };
 const picDe = o => (o && o.pic) || PIC_CAT[o && o.cat] || 'huevoBlanco';
 
+/* ───── Fotos reales de los productos ─────
+   Se localizan por categoría + nombre + presentación, así siguen funcionando
+   aunque José renombre o agregue productos desde «Editar productos».
+   Si una foto no carga, la ficha regresa sola a su pictograma. */
+const FOTOS = [
+  { src: 'arroz-morelos-25',    cat: 'arroz',  n: /morelos/,            pr: /25/ },
+  { src: 'arroz-saman-25',      cat: 'arroz',  n: /saman/,              pr: /25/ },
+  { src: 'frijol-americano-25', cat: 'frijol', n: /americano|negro/,    pr: /25/ },
+  { src: 'azucar-morena-25',    cat: 'azucar', n: /morena|estandar/,    pr: /25/ },
+  { src: 'azucar-refinada-25',  cat: 'azucar', n: /refinada/,           pr: /25/ },
+  { src: 'azucar-refinada-1kg', cat: 'azucar', n: /refinada/,           pr: /kilo|1\s*kg/ },
+  { src: 'claras-500',          cat: 'claras', n: /clara/,              pr: null },
+  { src: 'huevo-sanjuan-caja',  cat: 'huevo',  n: /san\s*juan/,         pr: /caja/ },
+  { src: 'huevo-colecta-caja',  cat: 'huevo',  n: /chaparral|colecta/,  pr: /caja/ },
+];
+const sinAcentos = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+/* Foto para una presentación: primero la exacta, luego la comodín del producto. */
+function fotoDe(cat, nombre, pres) {
+  const n = sinAcentos(nombre);
+  const cands = FOTOS.filter(f => f.cat === cat && f.n.test(n));
+  if (!cands.length) return null;
+  if (pres != null) {
+    const pr = sinAcentos(pres);
+    const exacta = cands.find(f => f.pr && f.pr.test(pr));
+    if (exacta) return 'img/' + exacta.src + '.webp';
+    const comodin = cands.find(f => !f.pr);
+    return comodin ? 'img/' + comodin.src + '.webp' : null;
+  }
+  return 'img/' + cands[0].src + '.webp';   // foto héroe del producto
+}
+/* Solo coincidencia exacta de presentación (para los chips del capturador). */
+function fotoPres(cat, nombre, pres) {
+  const n = sinAcentos(nombre), pr = sinAcentos(pres);
+  const f = FOTOS.find(x => x.cat === cat && x.n.test(n) && x.pr && x.pr.test(pr));
+  return f ? 'img/' + f.src + '.webp' : null;
+}
+const esMediaCaja = pres => /media/.test(sinAcentos(pres));
+
 const P = (cat, nombre, pres, pic) => ({ id: uid(), cat, nombre, pic: pic || PIC_CAT[cat],
                                          pres: pres.map(n => ({ n, precio: 0 })) });
 const HP = ['Cono', 'Kilo', 'Media caja', 'Caja'];
@@ -1236,6 +1301,7 @@ function cantarTurno(p) {
   c.innerHTML = `<div class="cTarjeta">
     <div class="cTurno">${p.folio}</div>
     <div class="cNombre">${esc(p.cliente)}</div>
+    <div class="fichas cFichas">${p.items.map(fichaItem).join('')}</div>
     <div class="cListo">${pictoEstado('terminado', 34)} ¡Listo para entregar!</div></div>`;
   c.classList.remove('oculto');
   clearTimeout(cantoT);
@@ -1705,16 +1771,21 @@ function irPaso(p) { paso = p; renderNuevo(); window.scrollTo(0, 0); }
 
 function renderProds() {
   const lista = db.productos.filter(p => p.cat === catActiva);
-  $('#prodGrid').innerHTML = lista.map(p =>
-    `<div class="prodTile"><div class="prodCab">${pictoProducto(picDe(p), 46)}<b>${esc(p.nombre)}</b></div>
+  $('#prodGrid').innerHTML = lista.map(p => {
+    const foto = fotoDe(p.cat, p.nombre, null);
+    return `<div class="prodTile"><div class="prodCab">${pictoProducto(picDe(p), 46)}<b>${esc(p.nombre)}</b></div>
+      ${foto ? `<div class="prodFoto"><img src="${foto}" alt="${esc(p.nombre)}" loading="lazy"
+        onerror="this.parentNode.remove()"></div>` : ''}
       <div class="presRow">${p.pres.map((pr, i) => {
         const k = p.id + '|' + i, n = draft[k] || 0;
+        const fp = fotoPres(p.cat, p.nombre, pr.n);
         return `<button class="presChip ${n ? 'sel' : ''}" data-add="${k}">` +
           (n ? `<span class="cant">${n}</span>` : '') +
-          pictoEnvase(envaseDe(pr.n), 30) +
+          `<span class="chipIco ${fp ? '' : 'fall'}">${fp ? `<img src="${fp}" alt="" loading="lazy"
+            onerror="this.parentNode.classList.add('fall')">` : ''}${pictoEnvase(envaseDe(pr.n), 30)}</span>` +
           `<span>${esc(pr.n)}</span>` + (pr.precio > 0 ? `<small>${money(pr.precio)}</small>` : '') + `</button>`;
-      }).join('')}</div></div>`
-  ).join('') || '<div class="sinProd">Sin productos en esta categoría. Tócale «Editar productos».</div>';
+      }).join('')}</div></div>`;
+  }).join('') || '<div class="sinProd">Sin productos en esta categoría. Tócale «Editar productos».</div>';
 }
 
 function renderTicket() {
@@ -1726,7 +1797,9 @@ function renderTicket() {
     const pr = p && p.pres[Number(idx)];
     if (!p || !pr) return '';
     if (pr.precio > 0) { total += pr.precio * draft[k]; conPrecio = true; }
-    return `<div class="linea">${pictoProducto(picDe(p), 34)}
+    const fl = fotoDe(p.cat, p.nombre, pr.n);
+    return `<div class="linea"><span class="chipIco lineaIco ${fl ? '' : 'fall'}">${fl ? `<img src="${fl}" alt="" loading="lazy"
+        onerror="this.parentNode.classList.add('fall')">` : ''}${pictoProducto(picDe(p), 34)}</span>
       <span class="nom">${esc(p.nombre)}<small>${esc(pr.n)}${pr.precio > 0 ? ' · ' + money(pr.precio) : ''}</small></span>
       <span class="step"><button data-menos="${k}" aria-label="menos">−</button><b>${draft[k]}</b><button data-mas="${k}" aria-label="más">+</button></span></div>`;
   }).join('') || '<div class="vacioTicket">Toca los productos 👈</div>';
@@ -1783,12 +1856,20 @@ function relojAnillo(min, listo) {
     </svg><span class="min">${min}</span></div>`;
 }
 
-/* Una ficha por renglón del pedido: cantidad enorme, dibujo del producto y del envase. */
+/* Una ficha por renglón del pedido: cantidad enorme y la FOTO real del producto.
+   Sin foto (o si no carga), la ficha usa sus pictogramas de siempre. */
 function fichaItem(i) {
-  return `<div class="ficha">
+  const foto = fotoDe(i.cat, i.nombre, i.pres);
+  const media = foto && esMediaCaja(i.pres);
+  const rojo = foto && i.pic === 'huevoRojo';
+  return `<div class="ficha ${foto ? 'conFoto' : ''}">
     <span class="cantG">${i.cant}</span>
-    ${pictoProducto(picDe(i), 54)}
-    ${pictoEnvase(envaseDe(i.pres), 28)}
+    ${foto ? `<span class="fotoMarco"><img class="fotoP" src="${foto}" alt="${esc(i.nombre)}" loading="lazy"
+        onerror="this.closest('.ficha').classList.remove('conFoto')">
+      ${media ? '<span class="mitadP">½</span>' : ''}
+      ${rojo ? `<span class="miniPic">${pictoProducto('huevoRojo', 18)}</span>` : ''}</span>` : ''}
+    <span class="picsAlt">${pictoProducto(picDe(i), 54)}
+    ${pictoEnvase(envaseDe(i.pres), 28)}</span>
     <span class="txt">${esc(i.pres)}</span>
   </div>`;
 }
